@@ -23,8 +23,8 @@ export default function SidebarNav() {
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/ai-assistant", label: "AI Assistant", icon: Bot },
-    { href: "#", label: "Connections", icon: LinkIcon },
-    { href: "#", label: "Settings", icon: Settings },
+    { href: "/connections", label: "Connections", icon: LinkIcon },
+    { href: "/settings", label: "Settings", icon: Settings },
   ];
 
   return (
