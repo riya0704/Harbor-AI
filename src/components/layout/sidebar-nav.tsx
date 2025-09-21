@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Bot, Home, Link as LinkIcon, Settings } from "lucide-react";
@@ -38,14 +39,17 @@ export default function SidebarNav() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <Link href={item.href} passHref legacyBehavior>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <a>
-                    <item.icon />
-                    {item.label}
-                  </a>
-                </SidebarMenuButton>
-              </Link>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === item.href}
+                as={Link}
+                href={item.href}
+              >
+                <>
+                  <item.icon />
+                  {item.label}
+                </>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
