@@ -27,9 +27,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error('JWT_SECRET is not defined in environment variables');
+    }
+
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || 'your-default-secret',
+      secret,
       { expiresIn: '1d' }
     );
     
@@ -38,8 +43,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ user: userObject, token }, { status: 200 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login failed:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }

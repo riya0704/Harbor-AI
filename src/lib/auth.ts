@@ -2,9 +2,13 @@ import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { UserDocument } from '@/models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function verifyToken(token: string): any | null {
+  if (!JWT_SECRET) {
+      console.error('JWT_SECRET is not defined');
+      return null;
+  }
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
