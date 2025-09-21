@@ -14,7 +14,7 @@ interface AppContextType {
   accounts: SocialAccount[];
   addAccount: (platform: string, username: string) => Promise<void>;
   posts: Post[];
-  addPost: (post: Omit<Post, "id" | "status">) => Promise<void>;
+  addPost: (post: Omit<Post, "id" | "status" | "userId">) => Promise<void>;
   updatePost: (post: Post) => Promise<void>;
   getPostsForDate: (date: Date) => Post[];
   isLoading: boolean;
@@ -137,7 +137,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [token]);
 
 
-  const addPost = useCallback(async (post: Omit<Post, "id" | "status">) => {
+  const addPost = useCallback(async (post: Omit<Post, "id" | "status" | "userId">) => {
     if(!token) return;
     try {
         const response = await fetch('/api/posts', {
@@ -195,5 +195,3 @@ export function useAppContext() {
   }
   return context;
 }
-
-    

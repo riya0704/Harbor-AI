@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Calendar as CalendarIcon,
   Clock,
-  Image as ImageIcon,
   Twitter,
   Linkedin,
 } from "lucide-react";
@@ -34,7 +33,6 @@ import type { Post, SocialPlatform } from "@/lib/types";
 import { Icons } from "@/components/icons";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
 import { useAppContext } from "@/context/app-context";
 import Image from "next/image";
 
@@ -67,6 +65,7 @@ export function SchedulePostDialog({
   const [image, setImage] = useState<string | undefined>();
   const [video, setVideo] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
+  const [status, setStatus] = useState<"draft" | "scheduled">("scheduled");
   
   const { accounts } = useAppContext();
 
@@ -80,6 +79,7 @@ export function SchedulePostDialog({
       setImage(post.image);
       setVideo(post.video);
       setId(post.id);
+      setStatus(post.status === "draft" ? "draft" : "scheduled");
     }
   }, [post]);
 
@@ -97,7 +97,7 @@ export function SchedulePostDialog({
       type,
       image,
       video,
-      status: 'scheduled'
+      status: status
     };
     if (onSave) onSave(postToSave);
   };
@@ -199,12 +199,24 @@ export function SchedulePostDialog({
                     Dynamic posts aim for engagement, while static posts are for simple announcements.
                 </p>
             </div>
+            <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={status} onValueChange={(v: "draft" | "scheduled") => setStatus(v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select post status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                    <SelectItem value="draft">Save as Draft</SelectItem>
+                  </SelectContent>
+                </Select>
+            </div>
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={() => onOpenChange?.(false)}>Cancel</Button>
         <Button onClick={handleSave}>
-          {id ? "Save Changes" : "Schedule Post"}
+          {id ? "Save Changes" : (status === 'draft' ? 'Save Draft' : 'Schedule Post')}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -219,5 +231,3 @@ export function SchedulePostDialog({
 
   return <Dialog open={open} onOpenChange={onOpenChange}>{DialogContentInner}</Dialog>
 }
-
-    

@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document, models, model } from 'mongoose';
-import type { Post as PostType } from '@/lib/types';
+
+// Note: Omit userId from PostType as it will be part of the Mongoose document via ref
+export interface PostDocument extends Omit<import('@/lib/types').Post, 'id' | 'userId'>, Document {
+  id: string;
+  userId: mongoose.Types.ObjectId;
+}
 
 const PostSchema = new Schema({
   date: { type: Date, required: true },
@@ -7,15 +12,10 @@ const PostSchema = new Schema({
   content: { type: String, required: true },
   image: { type: String },
   video: { type: String },
-  status: { type: String, required: true },
-  type: { type: String, required: true },
+  status: { type: String, required: true, enum: ['draft', 'scheduled', 'published', 'error'] },
+  type: { type: String, required: true, enum: ['dynamic', 'static'] },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, 
 });
-
-export interface PostDocument extends Omit<PostType, 'id' | 'date'>, Document {
-  id: string;
-  date: Date;
-}
 
 const PostModel = models.Post || model<PostDocument>('Post', PostSchema);
 

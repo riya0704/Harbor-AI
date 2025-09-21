@@ -31,6 +31,7 @@ export const MOCK_POSTS: Post[] = [
     content: "Excited to announce our new AI-powered platform, Harbor AI! Simplifying social media management for everyone. #AI #SocialMedia",
     status: "scheduled",
     type: "static",
+    userId: "mock-user",
   },
   {
     id: "post2",
@@ -39,7 +40,8 @@ export const MOCK_POSTS: Post[] = [
     content: "Our team at Humanity Founders is proud to launch Harbor AI, a tool designed to empower creators and businesses in the digital space. Discover how we're leveraging AI to streamline content creation and scheduling.",
     status: "scheduled",
     type: "dynamic",
-    image: "https://picsum.photos/seed/post2/600/400"
+    image: "https://picsum.photos/seed/post2/600/400",
+    userId: "mock-user",
   },
    {
     id: "post3",
@@ -48,6 +50,7 @@ export const MOCK_POSTS: Post[] = [
     content: "Just published a new blog post on the future of AI in marketing. A must-read for all industry professionals!",
     status: "published",
     type: "static",
+    userId: "mock-user",
   },
   {
     id: "post4",
@@ -56,6 +59,7 @@ export const MOCK_POSTS: Post[] = [
     content: "Behind the scenes at Harbor AI! ✨ #StartupLife #Tech",
     status: "draft",
     type: "dynamic",
-    image: "https://picsum.photos/seed/post4/400/400"
+    image: "https://picsum.photos/seed/post4/400/400",
+    userId: "mock-user",
   }
 ];

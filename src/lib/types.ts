@@ -20,4 +20,5 @@ export type Post = {
   video?: string;
   status: PostStatus;
   type: PostType;
+  userId: string;
 };

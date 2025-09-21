@@ -13,13 +13,12 @@ import {
   getDay,
   isSameDay,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus, Twitter, Linkedin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useAppContext } from "@/context/app-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Post } from "@/lib/types";
-import { Icons } from "../icons";
 import { SchedulePostDialog } from "./schedule-post-dialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,7 +30,7 @@ const platformColors: Record<string, string> = {
 
 export default function ContentCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { posts, getPostsForDate, addPost, updatePost } = useAppContext();
+  const { getPostsForDate, addPost, updatePost } = useAppContext();
   const { toast } = useToast();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -86,12 +85,12 @@ export default function ContentCalendar() {
     setDialogOpen(true);
   };
   
-  const handleSavePost = (post: Post) => {
+  const handleSavePost = async (post: Post) => {
     if(post.id) {
-        updatePost(post);
+        await updatePost(post);
         toast({ title: "Post Updated!", description: "Your post has been updated on the calendar." });
     } else {
-        addPost(post);
+        await addPost(post);
         toast({ title: "Post Scheduled!", description: "Your new post has been added to the calendar." });
     }
     setDialogOpen(false);
