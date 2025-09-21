@@ -9,9 +9,7 @@ const PostSchema = new Schema({
   video: { type: String },
   status: { type: String, required: true },
   type: { type: String, required: true },
-  // Assuming a simple association with a user for now
-  // In a real app, this would be a more robust ObjectId reference
-  userId: { type: String, required: true, default: 'user1' }, 
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, 
 });
 
 export interface PostDocument extends Omit<PostType, 'id' | 'date'>, Document {

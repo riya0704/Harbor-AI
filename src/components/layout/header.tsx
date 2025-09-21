@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, PlusCircle } from "lucide-react";
+import { Bell, LogOut, PlusCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +14,19 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SchedulePostDialog } from "@/components/dashboard/schedule-post-dialog";
 import { useState } from "react";
+import { useAppContext } from "@/context/app-context";
 
 export default function Header() {
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const { user, logout } = useAppContext();
+
+  const getInitials = (name: string = "") => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("");
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
@@ -40,10 +50,10 @@ export default function Header() {
               <Avatar className="h-8 w-8">
                 <AvatarImage
                   src="https://picsum.photos/seed/user-avatar/32/32"
-                  alt="User avatar"
+                  alt={user?.name || "User avatar"}
                   data-ai-hint="person portrait"
                 />
-                <AvatarFallback>UA</AvatarFallback>
+                <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -53,7 +63,10 @@ export default function Header() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

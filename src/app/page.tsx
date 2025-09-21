@@ -1,7 +1,10 @@
+"use client";
+
 import AccountManager from "@/components/dashboard/account-manager";
 import AiAssistant from "@/components/dashboard/ai-assistant";
 import ContentCalendar from "@/components/dashboard/content-calendar";
 import Header from "@/components/layout/header";
+import withAuth from "@/components/layout/with-auth";
 import SidebarNav from "@/components/layout/sidebar-nav";
 import {
   Sidebar,
@@ -9,7 +12,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 
-export default function DashboardPage() {
+function DashboardPage() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
@@ -34,3 +37,5 @@ export default function DashboardPage() {
     </SidebarProvider>
   );
 }
+
+export default withAuth(DashboardPage);
