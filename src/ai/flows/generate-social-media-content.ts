@@ -37,11 +37,18 @@ export type GenerateSocialMediaContentInput = z.infer<
 >;
 
 const GenerateSocialMediaContentOutputSchema = z.object({
-  text: z.string().optional().describe('The generated text content.'),
-  imageUrl: z.string().optional().describe('The URL of the generated image.'),
-  imageCaption: z.string().optional().describe('The caption for the generated image.'),
-  videoUrl: z.string().optional().describe('The URL of the generated video.'),
+  text: z.string().optional().describe('The generated text content for a text-only post.'),
+  imageCaption: z
+    .string()
+    .optional()
+    .describe('The caption for the generated image.'),
+  imagePrompt: z
+    .string()
+    .optional()
+    .describe('A short, descriptive prompt for an image generation model.'),
+  imageUrl: z.string().optional().describe('The URL of the generated image as a data URI.'),
   videoCaption: z.string().optional().describe('The caption for the generated video.'),
+  videoUrl: z.string().optional().describe('The URL of the generated video.'),
 });
 
 export type GenerateSocialMediaContentOutput = z.infer<
@@ -54,27 +61,56 @@ export async function generateSocialMediaContent(
   return generateSocialMediaContentFlow(input);
 }
 
-const generateSocialMediaContentPrompt = ai.definePrompt({
-  name: 'generateSocialMediaContentPrompt',
+const textGenerationPrompt = ai.definePrompt({
+  name: 'textGenerationPrompt',
   input: {schema: GenerateSocialMediaContentInputSchema},
-  output: {schema: GenerateSocialMediaContentOutputSchema},
+  output: {
+    schema: z.object({
+      text: z.string().describe('The generated text content for a text-only post.'),
+    }),
+  },
   prompt: `You are a social media expert. Your task is to expand the following content idea into a full social media post.
 
 Content Idea: "{{{suggestion}}}"
 
-Take this idea and generate an engaging social media post based on the provided business details, content type, and desired tone and style.
+Take this idea and generate an engaging text-only social media post based on the provided business details and desired tone, style, and persona.
 
 Business Details: {{{businessDetails}}}
-Content Type: {{{contentType}}}
 Tone: {{{tone}}}
 Style: {{{style}}}
 Persona: {{{persona}}}
 
-If the content type is 'text', generate a text post.
-If the content type is 'image', generate a URL for an image and a caption.
-If the content type is 'video', generate a URL for a video and a caption.
+Ensure that the content is creative, engaging, and doesn't sound too AI-generated.
+`,
+});
 
-Ensure that the content is creative, engaging, and doesn't sound too AI-generated. It should reflect the specified tone, style, and persona.
+const imageGenerationPrompt = ai.definePrompt({
+  name: 'imageGenerationPrompt',
+  input: {schema: GenerateSocialMediaContentInputSchema},
+  output: {
+    schema: z.object({
+      imageCaption: z.string().describe('The caption for the generated image.'),
+      imagePrompt: z
+        .string()
+        .describe(
+          'A short, descriptive prompt for an image generation model. This should be a single sentence describing the visual content.'
+        ),
+    }),
+  },
+  prompt: `You are a social media expert. Your task is to generate a caption and an image prompt for a social media post based on a content idea.
+
+Content Idea: "{{{suggestion}}}"
+
+Based on the idea, business details, and desired tone/style/persona, generate:
+1. An engaging and creative caption for the image.
+2. A concise, descriptive prompt (1-2 sentences) to be used with an AI image generation model to create a visually appealing image that matches the caption.
+
+Business Details: {{{businessDetails}}}
+Tone: {{{tone}}}
+Style: {{{style}}}
+Persona: {{{persona}}}
+
+Ensure the caption is engaging and the image prompt is specific enough to generate a high-quality image.
 `,
 });
 
@@ -85,7 +121,39 @@ const generateSocialMediaContentFlow = ai.defineFlow(
     outputSchema: GenerateSocialMediaContentOutputSchema,
   },
   async input => {
-    const {output} = await generateSocialMediaContentPrompt(input);
-    return output!;
+    if (input.contentType === 'text') {
+      const {output} = await textGenerationPrompt(input);
+      return output!;
+    }
+
+    if (input.contentType === 'image') {
+      // 1. Generate caption and image prompt
+      const {output: imageDetails} = await imageGenerationPrompt(input);
+      if (!imageDetails?.imagePrompt) {
+        throw new Error('Failed to generate image details.');
+      }
+
+      // 2. Generate image
+      const {media} = await ai.generate({
+        model: 'googleai/imagen-4.0-fast-generate-001',
+        prompt: imageDetails.imagePrompt,
+      });
+
+      return {
+        imageCaption: imageDetails.imageCaption,
+        imagePrompt: imageDetails.imagePrompt,
+        imageUrl: media.url,
+      };
+    }
+
+    if (input.contentType === 'video') {
+      // Placeholder for video generation
+      return {
+        videoCaption: `A great video about: ${input.suggestion}`,
+        videoUrl: 'https://placehold.co/1080x1920.mp4?text=Sample+Video',
+      };
+    }
+
+    return {};
   }
 );

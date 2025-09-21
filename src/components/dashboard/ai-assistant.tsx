@@ -34,11 +34,12 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Wand2 } from "lucide-react";
 import { getContentSuggestions } from "@/ai/flows/get-content-suggestions";
-import { generateSocialMediaContent } from "@/ai/flows/generate-social-media-content";
+import { generateSocialMediaContent, GenerateSocialMediaContentOutput } from "@/ai/flows/generate-social-media-content";
 import { refineGeneratedContent } from "@/ai/flows/refine-generated-content";
 import { SchedulePostDialog } from "./schedule-post-dialog";
 import { useAppContext } from "@/context/app-context";
 import { Separator } from "../ui/separator";
+import Image from "next/image";
 
 const suggestionSchema = z.object({
   businessDetails: z.string().min(10, "Please provide more details."),
@@ -73,13 +74,16 @@ export default function AiAssistant() {
   const [isRefinePending, startRefineTransition] = useTransition();
 
   const [suggestions, setSuggestions] = useState<string[] | null>(null);
-  const [generatedContent, setGeneratedContent] = useState<{ text: string } | null>(null);
+  const [generatedContent, setGeneratedContent] = useState<GenerateSocialMediaContentOutput | null>(null);
   const [refinedContent, setRefinedContent] = useState<string | null>(null);
 
   const [isScheduling, setScheduling] = useState(false);
   const [activeTab, setActiveTab] = useState("ideas");
+  
+  const [selectedContentType, setSelectedContentType] = useState<'text' | 'image' | 'video'>('text');
 
-  const finalContent = refinedContent || generatedContent?.text;
+  const finalContent = refinedContent || generatedContent?.text || generatedContent?.imageCaption;
+  const finalImage = generatedContent?.imageUrl;
 
   const suggestionForm = useForm<z.infer<typeof suggestionSchema>>({
     resolver: zodResolver(suggestionSchema),
@@ -120,12 +124,11 @@ export default function AiAssistant() {
         setRefinedContent(null);
         setActiveTab("generate");
         const result = await generateSocialMediaContent(formData);
-        let content = result.text || "";
-        if (result.imageCaption) content += `\n\n${result.imageCaption}`;
-        if (result.videoCaption) content += `\n\n${result.videoCaption}`;
         
-        setGeneratedContent({ text: content });
-        refineForm.setValue("originalContent", content);
+        setGeneratedContent(result);
+
+        const contentToRefine = result.text || result.imageCaption || "";
+        refineForm.setValue("originalContent", contentToRefine);
 
       } catch (error) {
         console.error("AI content generation failed:", error);
@@ -296,6 +299,13 @@ export default function AiAssistant() {
                     </div>
                   ) : (
                     <div className="space-y-2">
+                      <Tabs value={selectedContentType} onValueChange={(v) => setSelectedContentType(v as any)} className="w-full">
+                          <TabsList className="grid w-full grid-cols-3 mb-2">
+                              <TabsTrigger value="text">Text</TabsTrigger>
+                              <TabsTrigger value="image">Image</TabsTrigger>
+                              <TabsTrigger value="video">Video</TabsTrigger>
+                          </TabsList>
+                      </Tabs>
                       {suggestions?.map((suggestion, i) => (
                         <Card key={i} className="p-3 bg-muted/50">
                           <div className="flex justify-between items-center">
@@ -303,7 +313,7 @@ export default function AiAssistant() {
                             <Button size="sm" onClick={() => onGenerateSubmit({
                               suggestion: suggestion,
                               businessDetails: suggestionForm.getValues("businessDetails"),
-                              contentType: "text",
+                              contentType: selectedContentType,
                               persona: suggestionForm.getValues("personaTraits"),
                             })} disabled={isGeneratePending}>
                                 {isGeneratePending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Generate'}
@@ -336,7 +346,12 @@ export default function AiAssistant() {
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...
                         </div>
                       ) : (
-                        <p className="text-sm whitespace-pre-wrap">{finalContent}</p>
+                        <div className="space-y-4">
+                          {finalImage && (
+                            <Image src={finalImage} alt="Generated image" width={200} height={200} className="rounded-md mx-auto" />
+                          )}
+                          <p className="text-sm whitespace-pre-wrap">{finalContent}</p>
+                        </div>
                       )}
                   </div>
                    {isRefinePending && (
@@ -395,7 +410,7 @@ export default function AiAssistant() {
           <SchedulePostDialog
               open={isScheduling}
               onOpenChange={setScheduling}
-              post={{ content: finalContent }}
+              post={{ content: finalContent, image: finalImage }}
               onSave={handleSavePost}
           >
               <Button onClick={handleSchedule} className="w-full">
