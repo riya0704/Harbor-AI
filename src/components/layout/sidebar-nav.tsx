@@ -39,17 +39,16 @@ export default function SidebarNav() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                as={Link}
-                href={item.href}
-              >
-                <span>
-                  <item.icon />
-                  {item.label}
-                </span>
-              </SidebarMenuButton>
+                <Link href={item.href}>
+                    <SidebarMenuButton
+                        isActive={pathname === item.href}
+                    >
+                        <span>
+                        <item.icon />
+                        {item.label}
+                        </span>
+                    </SidebarMenuButton>
+                </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
