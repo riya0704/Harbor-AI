@@ -72,8 +72,8 @@ export function SchedulePostDialog({
   useEffect(() => {
     if (post) {
       setContent(post.content || "");
-      setDate(post.date || new Date());
-      setTime(post.date ? format(post.date, "HH:mm") : "10:00");
+      setDate(post.date ? new Date(post.date) : new Date());
+      setTime(post.date ? format(new Date(post.date), "HH:mm") : "10:00");
       setPlatforms(post.platforms || []);
       setType(post.type || "static");
       setImage(post.image);
