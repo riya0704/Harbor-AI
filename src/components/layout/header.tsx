@@ -15,10 +15,13 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SchedulePostDialog } from "@/components/dashboard/schedule-post-dialog";
 import { useState } from "react";
 import { useAppContext } from "@/context/app-context";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function Header() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const { user, logout } = useAppContext();
+  
+  const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
 
   const getInitials = (name: string = "") => {
     return name
@@ -48,11 +51,13 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src="https://picsum.photos/seed/user-avatar/32/32"
-                  alt={user?.name || "User avatar"}
-                  data-ai-hint="person portrait"
-                />
+                {userAvatar && (
+                  <AvatarImage
+                    src={userAvatar.imageUrl}
+                    alt={user?.name || "User avatar"}
+                    data-ai-hint={userAvatar.imageHint}
+                  />
+                )}
                 <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
               </Avatar>
             </Button>
