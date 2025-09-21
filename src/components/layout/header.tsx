@@ -1,6 +1,7 @@
+
 "use client";
 
-import { Bell, LogOut, PlusCircle } from "lucide-react";
+import { Bell, LogOut, PlusCircle, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { SchedulePostDialog } from "@/components/dashboard/schedule-post-dialog"
 import { useState } from "react";
 import { useAppContext } from "@/context/app-context";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import Link from "next/link";
 
 export default function Header() {
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -65,8 +67,12 @@ export default function Header() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <Link href="/settings">
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
