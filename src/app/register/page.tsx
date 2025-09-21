@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -139,7 +140,7 @@ export default function RegisterPage() {
                         placeholder="••••••••"
                         {...field}
                       />
-FormControl>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
