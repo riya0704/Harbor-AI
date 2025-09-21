@@ -17,6 +17,7 @@ const GenerateSocialMediaContentInputSchema = z.object({
     .string()
     .describe('Details about the business or topic for which content is to be generated.'),
   contentType: z.enum(['text', 'image', 'video']).describe('The type of content to generate.'),
+  suggestion: z.string().describe('The user selected suggestion to expand upon.'),
   tone: z
     .string()
     .optional()
@@ -57,7 +58,11 @@ const generateSocialMediaContentPrompt = ai.definePrompt({
   name: 'generateSocialMediaContentPrompt',
   input: {schema: GenerateSocialMediaContentInputSchema},
   output: {schema: GenerateSocialMediaContentOutputSchema},
-  prompt: `You are a social media expert. Generate engaging social media content based on the provided business details, content type, and desired tone and style.
+  prompt: `You are a social media expert. Your task is to expand the following content idea into a full social media post.
+
+Content Idea: "{{{suggestion}}}"
+
+Take this idea and generate an engaging social media post based on the provided business details, content type, and desired tone and style.
 
 Business Details: {{{businessDetails}}}
 Content Type: {{{contentType}}}
@@ -65,12 +70,11 @@ Tone: {{{tone}}}
 Style: {{{style}}}
 Persona: {{{persona}}}
 
-
 If the content type is 'text', generate a text post.
 If the content type is 'image', generate a URL for an image and a caption.
 If the content type is 'video', generate a URL for a video and a caption.
 
-Ensure that the content is creative and doesn't sound too AI-generated. It should reflect the specified tone and style.
+Ensure that the content is creative, engaging, and doesn't sound too AI-generated. It should reflect the specified tone, style, and persona.
 `,
 });
 
