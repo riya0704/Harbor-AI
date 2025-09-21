@@ -45,10 +45,10 @@ export default function SidebarNav() {
                 as={Link}
                 href={item.href}
               >
-                <>
+                <span>
                   <item.icon />
                   {item.label}
-                </>
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
