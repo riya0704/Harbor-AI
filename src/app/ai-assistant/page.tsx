@@ -1,7 +1,6 @@
 "use client";
 
-import AccountManager from "@/components/dashboard/account-manager";
-import ContentCalendar from "@/components/dashboard/content-calendar";
+import AiAssistant from "@/components/dashboard/ai-assistant";
 import Header from "@/components/layout/header";
 import withAuth from "@/components/layout/with-auth";
 import SidebarNav from "@/components/layout/sidebar-nav";
@@ -11,7 +10,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 
-function DashboardPage() {
+function AiAssistantPage() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
@@ -21,13 +20,8 @@ function DashboardPage() {
         <SidebarInset className="flex flex-1 flex-col">
           <Header />
           <main className="flex-1 p-4 md:p-6 lg:p-8">
-            <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-3">
-              <div className="grid gap-8 lg:col-span-2">
-                <ContentCalendar />
-              </div>
-              <div className="grid gap-8">
-                <AccountManager />
-              </div>
+            <div className="mx-auto max-w-2xl">
+              <AiAssistant />
             </div>
           </main>
         </SidebarInset>
@@ -36,4 +30,4 @@ function DashboardPage() {
   );
 }
 
-export default withAuth(DashboardPage);
+export default withAuth(AiAssistantPage);

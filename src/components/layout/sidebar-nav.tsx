@@ -1,6 +1,7 @@
 "use client";
 
 import { Bot, Home, Link as LinkIcon, Settings } from "lucide-react";
+import Link from 'next/link';
 import {
   SidebarContent,
   SidebarHeader,
@@ -18,6 +19,13 @@ import { Button } from "../ui/button";
 export default function SidebarNav() {
   const pathname = usePathname();
 
+  const navItems = [
+    { href: "/", label: "Dashboard", icon: Home },
+    { href: "/ai-assistant", label: "AI Assistant", icon: Bot },
+    { href: "#", label: "Connections", icon: LinkIcon },
+    { href: "#", label: "Settings", icon: Settings },
+  ];
+
   return (
     <>
       <SidebarHeader className="border-b">
@@ -28,30 +36,18 @@ export default function SidebarNav() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/" isActive={pathname === "/"}>
-              <Home />
-              Dashboard
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton href="#">
-              <LinkIcon />
-              Connections
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton href="#">
-              <Bot />
-              AI Assistant
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton href="#">
-              <Settings />
-              Settings
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {navItems.map((item) => (
+            <SidebarMenuItem key={item.label}>
+              <Link href={item.href} passHref legacyBehavior>
+                <SidebarMenuButton asChild isActive={pathname === item.href}>
+                  <a>
+                    <item.icon />
+                    {item.label}
+                  </a>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
