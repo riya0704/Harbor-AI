@@ -1,5 +1,7 @@
 import type { SocialAccount, Post } from "./types";
 
+// This file is now for seeding/testing purposes and is not directly used by the app context.
+
 export const MOCK_ACCOUNTS: SocialAccount[] = [
   {
     id: "1",
