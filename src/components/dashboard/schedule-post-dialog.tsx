@@ -122,6 +122,24 @@ export function SchedulePostDialog({
     }
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        if (file.type.startsWith("image/")) {
+          setImage(result);
+          setVideo(undefined);
+        } else if (file.type.startsWith("video/")) {
+          setVideo(result);
+          setImage(undefined);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const DialogContentInner = (
     <DialogContent className="sm:max-w-2xl">
       <DialogHeader>
@@ -169,7 +187,7 @@ export function SchedulePostDialog({
             <Label>Media (optional)</Label>
             {image && <Image src={image} alt="Post image" width={100} height={100} className="rounded-md" />}
             {video && <video src={video} controls width={200} className="rounded-md" />}
-            <Input type="file" />
+            <Input type="file" onChange={handleFileChange} accept="image/*,video/*" />
           </div>
         </div>
         <div className="space-y-4">
