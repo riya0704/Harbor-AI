@@ -13,6 +13,12 @@ export const MOCK_ACCOUNTS: SocialAccount[] = [
     username: "Humanity Founders",
     avatarUrl: "https://picsum.photos/seed/linkedin/40/40",
   },
+  {
+    id: "3",
+    platform: "Instagram",
+    username: "humanity.founders",
+    avatarUrl: "https://picsum.photos/seed/instagram/40/40",
+  },
 ];
 
 export const MOCK_POSTS: Post[] = [
