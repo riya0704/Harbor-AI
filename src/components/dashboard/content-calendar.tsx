@@ -30,7 +30,7 @@ const platformColors: Record<string, string> = {
 
 export default function ContentCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { getPostsForDate, addPost, updatePost } = useAppContext();
+  const { getPostsForDate, addPost, updatePost, deletePost } = useAppContext();
   const { toast } = useToast();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -96,6 +96,13 @@ export default function ContentCalendar() {
     setDialogOpen(false);
   };
 
+  const handleDeletePost = async (postId: string) => {
+    await deletePost(postId);
+    toast({ variant: 'destructive', title: "Post Deleted!", description: "Your post has been removed from the calendar." });
+    setDialogOpen(false);
+  };
+
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -110,7 +117,13 @@ export default function ContentCalendar() {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <SchedulePostDialog open={isDialogOpen} onOpenChange={setDialogOpen} post={selectedPost ?? {date: selectedDate ?? new Date()}} onSave={handleSavePost}>
+        <SchedulePostDialog 
+            open={isDialogOpen} 
+            onOpenChange={setDialogOpen} 
+            post={selectedPost ?? {date: selectedDate ?? new Date()}} 
+            onSave={handleSavePost}
+            onDelete={handleDeletePost}
+        >
            <Button onClick={() => handleDayClick(new Date())}>
                 <Plus className="mr-2 h-4 w-4" /> Schedule Post
             </Button>

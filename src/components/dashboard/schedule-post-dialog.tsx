@@ -11,10 +11,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Textarea } from "@/components/ui/textarea";
 import {
   Calendar as CalendarIcon,
   Clock,
+  Trash2,
   Twitter,
   Linkedin,
 } from "lucide-react";
@@ -42,6 +54,7 @@ interface SchedulePostDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onSave?: (post: any) => void;
+  onDelete?: (postId: string) => void;
 }
 
 const platformIcons: Record<SocialPlatform, React.ReactNode> = {
@@ -55,7 +68,8 @@ export function SchedulePostDialog({
   post,
   open,
   onOpenChange,
-  onSave
+  onSave,
+  onDelete,
 }: SchedulePostDialogProps) {
   const [content, setContent] = useState("");
   const [date, setDate] = useState<Date | undefined>();
@@ -102,6 +116,12 @@ export function SchedulePostDialog({
     if (onSave) onSave(postToSave);
   };
   
+  const handleDelete = () => {
+    if (id && onDelete) {
+      onDelete(id);
+    }
+  };
+
   const DialogContentInner = (
     <DialogContent className="sm:max-w-2xl">
       <DialogHeader>
@@ -213,11 +233,37 @@ export function SchedulePostDialog({
             </div>
         </div>
       </div>
-      <DialogFooter>
-        <Button variant="outline" onClick={() => onOpenChange?.(false)}>Cancel</Button>
-        <Button onClick={handleSave}>
-          {id ? "Save Changes" : (status === 'draft' ? 'Save Draft' : 'Schedule Post')}
-        </Button>
+      <DialogFooter className="justify-between">
+        <div>
+          {id && (
+             <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="gap-2">
+                  <Trash2 className="h-4 w-4"/> Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this
+                    post from your calendar.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange?.(false)}>Cancel</Button>
+            <Button onClick={handleSave}>
+            {id ? "Save Changes" : (status === 'draft' ? 'Save Draft' : 'Schedule Post')}
+            </Button>
+        </div>
       </DialogFooter>
     </DialogContent>
   )

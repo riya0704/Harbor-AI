@@ -16,6 +16,7 @@ interface AppContextType {
   posts: Post[];
   addPost: (post: Omit<Post, "id" | "status" | "userId">) => Promise<void>;
   updatePost: (post: Post) => Promise<void>;
+  deletePost: (postId: string) => Promise<void>;
   getPostsForDate: (date: Date) => Post[];
   isLoading: boolean;
   isAuthLoading: boolean;
@@ -171,6 +172,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
+  const deletePost = useCallback(async (postId: string) => {
+    if(!token) return;
+    try {
+        const response = await fetch(`/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(token),
+        });
+        if (!response.ok) throw new Error('Failed to delete post');
+        setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (error) {
+        console.error(error);
+    }
+  }, [token]);
+
+
   const getPostsForDate = useCallback(
     (date: Date) => {
       return posts.filter(
@@ -183,7 +199,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [posts]
   );
 
-  const value = { user, token, login, logout, accounts, addAccount, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading };
+  const value = { user, token, login, logout, accounts, addAccount, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading, deletePost };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
