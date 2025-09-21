@@ -34,7 +34,7 @@ const GenerateSocialMediaContentInputSchema = z.object({
 });
 
 export type GenerateSocialMediaContentInput = z.infer<
-  typeof GenerateSocialMediaContentInputSchema
+  typeof GenerateSocialMediaMediaContentInputSchema
 >;
 
 const GenerateSocialMediaContentOutputSchema = z.object({
@@ -124,24 +124,24 @@ const videoGenerationPrompt = ai.definePrompt({
       videoPrompt: z
         .string()
         .describe(
-          'A short, descriptive prompt for a video generation model. This should be a single sentence describing the visual content of the video.'
+          'A concise, descriptive prompt for an AI video generation model. This should be a single sentence describing the visual content of the video. The prompt should be cinematic and evocative.'
         ),
     }),
   },
-  prompt: `You are a social media expert. Your task is to generate a caption and a video prompt for a social media post based on a content idea.
+  prompt: `You are a social media expert and film director. Your task is to generate a caption and a video prompt for a social media post based on a content idea.
 
 Content Idea: "{{{suggestion}}}"
 
 Based on the idea, business details, and desired tone/style/persona, generate:
 1. An engaging and creative caption for the video.
-2. A concise, descriptive prompt (1-2 sentences) to be used with an AI video generation model to create a visually appealing video that matches the caption.
+2. A concise, descriptive, and cinematic prompt (1 sentence) to be used with an AI video generation model to create a visually appealing, high-quality, short social media video.
 
 Business Details: {{{businessDetails}}}
 Tone: {{{tone}}}
 Style: {{{style}}}
 Persona: {{{persona}}}
 
-Ensure the caption is engaging and the video prompt is specific enough to generate a high-quality, short social media video.
+Ensure the caption is engaging and the video prompt is specific and creative enough to generate a high-quality video.
 `,
 });
 
@@ -165,6 +165,18 @@ async function downloadVideo(video: MediaPart): Promise<string> {
   return `data:video/mp4;base64,${buffer.toString('base64')}`;
 }
 
+// Simple hash function to create a seed from a string
+const simpleHash = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+};
+
+
 const generateSocialMediaContentFlow = ai.defineFlow(
   {
     name: 'generateSocialMediaContentFlow',
@@ -184,16 +196,14 @@ const generateSocialMediaContentFlow = ai.defineFlow(
         throw new Error('Failed to generate image details.');
       }
 
-      // 2. Generate image
-      const {media} = await ai.generate({
-        model: 'googleai/imagen-4.0-fast-generate-001',
-        prompt: imageDetails.imagePrompt,
-      });
+      // 2. Generate a placeholder image URL instead of calling Imagen
+      const seed = simpleHash(imageDetails.imagePrompt);
+      const imageUrl = `https://picsum.photos/seed/${seed}/400/400`;
 
       return {
         imageCaption: imageDetails.imageCaption,
         imagePrompt: imageDetails.imagePrompt,
-        imageUrl: media.url,
+        imageUrl: imageUrl,
       };
     }
 
