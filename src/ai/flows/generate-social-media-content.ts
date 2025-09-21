@@ -12,8 +12,6 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import type {MediaPart} from 'genkit';
-import * as fs from 'fs';
-import {Readable} from 'stream';
 
 const GenerateSocialMediaContentInputSchema = z.object({
   businessDetails: z
