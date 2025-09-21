@@ -12,6 +12,7 @@ interface AppContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   accounts: SocialAccount[];
+  addAccount: (platform: string, username: string) => Promise<void>;
   posts: Post[];
   addPost: (post: Omit<Post, "id" | "status">) => Promise<void>;
   updatePost: (post: Post) => Promise<void>;
@@ -39,6 +40,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   const router = useRouter();
   
+  const logout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('authToken');
+    router.push('/login');
+  }, [router]);
+
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('authUser');
@@ -52,26 +61,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const fetchPosts = useCallback(async (authToken: string) => {
     try {
       const response = await fetch('/api/posts', { headers: getAuthHeaders(authToken) });
+      if (response.status === 401) {
+        logout();
+        return;
+      }
       if (!response.ok) throw new Error('Failed to fetch posts');
       const data = await response.json();
       setPosts(data.map((p: any) => ({ ...p, date: new Date(p.date) })));
     } catch (error) {
       console.error(error);
-      if((error as any).status === 401) logout();
     }
-  }, []);
+  }, [logout]);
 
   const fetchAccounts = useCallback(async (authToken: string) => {
     try {
       const response = await fetch('/api/accounts', { headers: getAuthHeaders(authToken) });
+       if (response.status === 401) {
+        logout();
+        return;
+      }
       if (!response.ok) throw new Error('Failed to fetch accounts');
       const data = await response.json();
       setAccounts(data);
     } catch (error) {
       console.error(error);
-      if((error as any).status === 401) logout();
     }
-  }, []);
+  }, [logout]);
   
   useEffect(() => {
     async function loadData() {
@@ -105,13 +120,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('authUser');
-    localStorage.removeItem('authToken');
-    router.push('/login');
-  };
+  const addAccount = useCallback(async (platform: string, username: string) => {
+    if(!token) return;
+    try {
+        const response = await fetch('/api/accounts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders(token) },
+            body: JSON.stringify({ platform, username }),
+        });
+        if (!response.ok) throw new Error('Failed to add account');
+        const newAccount = await response.json();
+        setAccounts((prev) => [...prev, newAccount]);
+    } catch (error) {
+        console.error(error);
+    }
+  }, [token]);
+
 
   const addPost = useCallback(async (post: Omit<Post, "id" | "status">) => {
     if(!token) return;
@@ -159,7 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [posts]
   );
 
-  const value = { user, token, login, logout, accounts, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading };
+  const value = { user, token, login, logout, accounts, addAccount, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
