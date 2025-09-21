@@ -82,8 +82,9 @@ export default function AiAssistant() {
   
   const [selectedContentType, setSelectedContentType] = useState<'text' | 'image' | 'video'>('text');
 
-  const finalContent = refinedContent || generatedContent?.text || generatedContent?.imageCaption;
+  const finalContent = refinedContent || generatedContent?.text || generatedContent?.imageCaption || generatedContent?.videoCaption;
   const finalImage = generatedContent?.imageUrl;
+  const finalVideo = generatedContent?.videoUrl;
 
   const suggestionForm = useForm<z.infer<typeof suggestionSchema>>({
     resolver: zodResolver(suggestionSchema),
@@ -127,7 +128,7 @@ export default function AiAssistant() {
         
         setGeneratedContent(result);
 
-        const contentToRefine = result.text || result.imageCaption || "";
+        const contentToRefine = result.text || result.imageCaption || result.videoCaption || "";
         refineForm.setValue("originalContent", contentToRefine);
 
       } catch (error) {
@@ -174,6 +175,7 @@ export default function AiAssistant() {
       content: post.content,
       type: post.type,
       image: post.image,
+      video: post.video,
     });
     toast({
       title: "Post Scheduled!",
@@ -350,6 +352,11 @@ export default function AiAssistant() {
                           {finalImage && (
                             <Image src={finalImage} alt="Generated image" width={200} height={200} className="rounded-md mx-auto" />
                           )}
+                          {finalVideo && (
+                            <div className="w-full aspect-video rounded-md overflow-hidden mx-auto max-w-[200px]">
+                              <video src={finalVideo} controls className="w-full h-full object-cover" />
+                            </div>
+                          )}
                           <p className="text-sm whitespace-pre-wrap">{finalContent}</p>
                         </div>
                       )}
@@ -410,7 +417,7 @@ export default function AiAssistant() {
           <SchedulePostDialog
               open={isScheduling}
               onOpenChange={setScheduling}
-              post={{ content: finalContent, image: finalImage }}
+              post={{ content: finalContent, image: finalImage, video: finalVideo }}
               onSave={handleSavePost}
           >
               <Button onClick={handleSchedule} className="w-full">
@@ -423,3 +430,5 @@ export default function AiAssistant() {
     </Card>
   );
 }
+
+    

@@ -65,6 +65,7 @@ export function SchedulePostDialog({
   const [platforms, setPlatforms] = useState<SocialPlatform[]>([]);
   const [type, setType] = useState<"static" | "dynamic">("static");
   const [image, setImage] = useState<string | undefined>();
+  const [video, setVideo] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
   
   const { accounts } = useAppContext();
@@ -77,6 +78,7 @@ export function SchedulePostDialog({
       setPlatforms(post.platforms || []);
       setType(post.type || "static");
       setImage(post.image);
+      setVideo(post.video);
       setId(post.id);
     }
   }, [post]);
@@ -94,6 +96,7 @@ export function SchedulePostDialog({
       platforms,
       type,
       image,
+      video,
       status: 'scheduled'
     };
     if (onSave) onSave(postToSave);
@@ -143,8 +146,9 @@ export function SchedulePostDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label>Image (optional)</Label>
+            <Label>Media (optional)</Label>
             {image && <Image src={image} alt="Post image" width={100} height={100} className="rounded-md" />}
+            {video && <video src={video} controls width={200} className="rounded-md" />}
             <Input type="file" />
           </div>
         </div>
@@ -215,3 +219,5 @@ export function SchedulePostDialog({
 
   return <Dialog open={open} onOpenChange={onOpenChange}>{DialogContentInner}</Dialog>
 }
+
+    
