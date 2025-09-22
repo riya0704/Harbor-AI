@@ -10,6 +10,7 @@ async function ensureDbConnection() {
 }
 
 export async function POST(request: Request) {
+  console.log('Login API: Received request.');
   try {
     await ensureDbConnection();
     const { email, password } = await request.json();

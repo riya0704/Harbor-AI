@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import User from '@/models/User';
@@ -8,6 +9,7 @@ async function ensureDbConnection() {
 }
 
 export async function POST(request: Request) {
+  console.log('Register API: Received request.');
   try {
     await ensureDbConnection();
     const { name, email, password } = await request.json();
