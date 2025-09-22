@@ -40,7 +40,6 @@ export async function POST(request: Request) {
     );
     
     const userObject = user.toObject();
-    delete userObject.passwordHash;
 
     return NextResponse.json({ user: userObject, token }, { status: 200 });
 
