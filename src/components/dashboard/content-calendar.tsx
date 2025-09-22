@@ -28,6 +28,13 @@ const platformColors: Record<string, string> = {
     Instagram: "bg-pink-600",
 };
 
+const statusColors: Record<string, string> = {
+    scheduled: "bg-blue-500",
+    published: "bg-green-500",
+    error: "bg-red-500",
+    draft: "bg-gray-400",
+}
+
 export default function ContentCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const { getPostsForDate, addPost, updatePost, deletePost } = useAppContext();
@@ -161,10 +168,13 @@ export default function ContentCalendar() {
                 </time>
                 <div className="mt-1 space-y-1">
                   {postsForDay.slice(0, 2).map((post) => (
-                    <button key={post.id} onClick={() => handlePostClick(post)} className="w-full text-left p-1 rounded-md bg-secondary hover:bg-secondary/80">
-                      <p className="text-xs truncate">{post.content}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {post.platforms.map(p => <div key={p} className={cn("w-2 h-2 rounded-full", platformColors[p])} />)}
+                    <button key={post.id} onClick={() => handlePostClick(post)} className="w-full text-left p-1.5 rounded-md bg-secondary hover:bg-secondary/80 text-secondary-foreground">
+                      <div className="flex items-start gap-2">
+                        <div className={cn("w-2 h-2 rounded-full mt-1.5 flex-shrink-0", statusColors[post.status])} />
+                        <p className="text-xs flex-1 break-words line-clamp-2">{post.content}</p>
+                      </div>
+                       <div className="flex items-center gap-1 mt-1.5 ml-4">
+                        {post.platforms.map(p => <div key={p} className={cn("w-1.5 h-1.5 rounded-full", platformColors[p])} />)}
                       </div>
                     </button>
                   ))}
