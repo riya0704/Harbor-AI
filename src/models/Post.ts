@@ -1,14 +1,12 @@
-
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 import { Post as PostType } from '@/lib/types';
 
 export interface PostDocument extends Omit<PostType, 'id'>, Document {
-  _id: mongoose.Types.ObjectId;
-  id: string;
+  id: string; // virtual getter
   userId: mongoose.Types.ObjectId;
 }
 
-const PostSchema = new Schema({
+const PostSchema = new Schema<PostDocument>({
   date: { type: Date, required: true },
   platforms: [{ type: String, required: true }],
   content: { type: String, required: true },
@@ -19,17 +17,24 @@ const PostSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, 
 });
 
-// Ensure virtual 'id' is included in toObject and toJSON outputs
-PostSchema.set('toObject', {
-  virtuals: true,
-  transform: (doc, ret) => {
-    delete ret._id;
-  }
+PostSchema.virtual('id').get(function() {
+  return this._id.toHexString();
 });
+
+// Ensure virtuals are included
 PostSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => {
     delete ret._id;
+    delete ret.__v;
+  }
+});
+
+PostSchema.set('toObject', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret._id;
+    delete ret.__v;
   }
 });
 

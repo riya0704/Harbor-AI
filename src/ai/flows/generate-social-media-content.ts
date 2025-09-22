@@ -21,20 +21,20 @@ const GenerateSocialMediaContentInputSchema = z.object({
   suggestion: z.string().describe('The user selected suggestion to expand upon.'),
   tone: z
     .string()
-    .optional()
+    .default('')
     .describe('The desired tone of the content (e.g., professional, funny, informative).'),
   style: z
     .string()
-    .optional()
+    .default('')
     .describe('The desired style of the content (e.g., minimalist, vibrant, corporate).'),
   persona: z
     .string()
-    .optional()
+    .default('')
     .describe('The persona to use when generating the content. Ex. "youthful", "expert", etc.'),
 });
 
 export type GenerateSocialMediaContentInput = z.infer<
-  typeof GenerateSocialMediaMediaContentInputSchema
+  typeof GenerateSocialMediaContentInputSchema
 >;
 
 const GenerateSocialMediaContentOutputSchema = z.object({
@@ -77,9 +77,9 @@ Content Idea: "{{{suggestion}}}"
 Take this idea and generate an engaging text-only social media post based on the provided business details and desired tone, style, and persona.
 
 Business Details: {{{businessDetails}}}
-Tone: {{{tone}}}
-Style: {{{style}}}
-Persona: {{{persona}}}
+{{#if tone}}Tone: {{{tone}}}{{/if}}
+{{#if style}}Style: {{{style}}}{{/if}}
+{{#if persona}}Persona: {{{persona}}}{{/if}}
 
 Ensure that the content is creative, engaging, and doesn't sound too AI-generated.
 `,
@@ -107,9 +107,9 @@ Based on the idea, business details, and desired tone/style/persona, generate:
 2. A concise, descriptive prompt (1-2 sentences) to be used with an AI image generation model to create a visually appealing image that matches the caption.
 
 Business Details: {{{businessDetails}}}
-Tone: {{{tone}}}
-Style: {{{style}}}
-Persona: {{{persona}}}
+{{#if tone}}Tone: {{{tone}}}{{/if}}
+{{#if style}}Style: {{{style}}}{{/if}}
+{{#if persona}}Persona: {{{persona}}}{{/if}}
 
 Ensure the caption is engaging and the image prompt is specific enough to generate a high-quality image.
 `,
@@ -137,9 +137,9 @@ Based on the idea, business details, and desired tone/style/persona, generate:
 2. A concise, descriptive, and cinematic prompt (1 sentence) to be used with an AI video generation model to create a visually appealing, high-quality, short social media video.
 
 Business Details: {{{businessDetails}}}
-Tone: {{{tone}}}
-Style: {{{style}}}
-Persona: {{{persona}}}
+{{#if tone}}Tone: {{{tone}}}{{/if}}
+{{#if style}}Style: {{{style}}}{{/if}}
+{{#if persona}}Persona: {{{persona}}}{{/if}}
 
 Ensure the caption is engaging and the video prompt is specific and creative enough to generate a high-quality video.
 `,
