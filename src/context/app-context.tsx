@@ -112,9 +112,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     if (response.ok) {
       const { user, token } = await response.json();
-      setUser(user);
+      
+      // Critical fix: Ensure password hash is not stored on the client
+      const clientSafeUser = { ...user };
+      delete clientSafeUser.passwordHash;
+
+      setUser(clientSafeUser);
       setToken(token);
-      localStorage.setItem('authUser', JSON.stringify(user));
+      localStorage.setItem('authUser', JSON.stringify(clientSafeUser));
       localStorage.setItem('authToken', token);
       return true;
     }
