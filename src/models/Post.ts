@@ -1,7 +1,8 @@
-import mongoose, { Schema, Document, models, model } from 'mongoose';
 
-// Note: Omit userId from PostType as it will be part of the Mongoose document via ref
-export interface PostDocument extends Omit<import('@/lib/types').Post, 'id' | 'userId'>, Document {
+import mongoose, { Schema, Document, models, model } from 'mongoose';
+import { Post as PostType } from '@/lib/types';
+
+export interface PostDocument extends Omit<PostType, 'id'>, Document {
   _id: mongoose.Types.ObjectId;
   id: string;
   userId: mongoose.Types.ObjectId;

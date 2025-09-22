@@ -37,7 +37,7 @@ export const PUT = withAuth(async function PUT(request: AuthenticatedRequest, { 
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ ...updatedPost.toObject(), id: updatedPost._id.toString() }, { status: 200 });
+    return NextResponse.json(updatedPost.toObject(), { status: 200 });
   } catch (error) {
     console.error(`Failed to update post ${params.id}:`, error);
     return NextResponse.json({ message: 'Failed to update post' }, { status: 500 });

@@ -2,6 +2,15 @@
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 import type { SocialAccount as SocialAccountType } from '@/lib/types';
 
+export interface SocialAccountDocument extends Omit<SocialAccountType, 'id'>, Document {
+  _id: mongoose.Types.ObjectId;
+  id: string;
+  userId: mongoose.Types.ObjectId;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenExpiresAt?: Date;
+}
+
 const SocialAccountSchema = new Schema({
   platform: { type: String, required: true },
   username: { type: String, required: true },
@@ -13,12 +22,21 @@ const SocialAccountSchema = new Schema({
   tokenExpiresAt: { type: Date },
 });
 
-export interface SocialAccountDocument extends Omit<SocialAccountType, 'id'>, Document {
-  id: string;
-  accessToken?: string;
-  refreshToken?: string;
-  tokenExpiresAt?: Date;
-}
+
+// Ensure virtual 'id' is included in toObject and toJSON outputs
+SocialAccountSchema.set('toObject', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret._id;
+  }
+});
+SocialAccountSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret._id;
+  }
+});
+
 
 const SocialAccountModel = models.SocialAccount || model<SocialAccountDocument>('SocialAccount', SocialAccountSchema);
 
