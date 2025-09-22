@@ -49,8 +49,11 @@ export async function POST(request: Request) {
     );
     console.log('Login API: JWT token generated successfully.');
     
-    const userObject = user.toObject();
-    // passwordHash is removed by the 'toObject' transform in the model
+    const userObject = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+    };
     
     return NextResponse.json({ user: userObject, token }, { status: 200 });
 

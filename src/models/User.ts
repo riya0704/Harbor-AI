@@ -25,10 +25,6 @@ const UserSchema = models.User?.schema || new Schema({
   },
   toObject: {
     virtuals: true,
-    transform: (doc, ret) => {
-      delete ret._id;
-      delete ret.__v;
-    }
   }
 });
 
