@@ -148,26 +148,6 @@ Ensure the caption is engaging and the video prompt is specific and creative eno
 `,
 });
 
-async function downloadVideo(video: MediaPart): Promise<string> {
-  const fetch = (await import('node-fetch')).default;
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not defined in environment variables');
-  }
-
-  const videoDownloadResponse = await fetch(`${video.media!.url}&key=${apiKey}`);
-  if (!videoDownloadResponse || videoDownloadResponse.status !== 200 || !videoDownloadResponse.body) {
-    throw new Error('Failed to fetch video');
-  }
-
-  const chunks: Buffer[] = [];
-  for await (const chunk of videoDownloadResponse.body) {
-    chunks.push(chunk as Buffer);
-  }
-  const buffer = Buffer.concat(chunks);
-  return `data:video/mp4;base64,${buffer.toString('base64')}`;
-}
-
 // Simple hash function to create a seed from a string
 const simpleHash = (str: string) => {
     let hash = 0;
@@ -217,39 +197,14 @@ const generateSocialMediaContentFlow = ai.defineFlow(
         throw new Error('Failed to generate video details.');
       }
 
-      // 2. Generate video
-      let {operation} = await ai.generate({
-        model: 'googleai/veo-2.0-generate-001',
-        prompt: videoDetails.videoPrompt,
-        config: {
-          durationSeconds: 5,
-          aspectRatio: '9:16',
-        },
-      });
+      // 2. Generate a placeholder video URL instead of calling Veo
+      const seed = simpleHash(videoDetails.videoPrompt);
+      const videoUrl = `https://videos.pexels.com/video-files/3209828/3209828-sd_640_360_30fps.mp4`;
 
-      if (!operation) {
-        throw new Error('Expected the model to return an operation');
-      }
-
-      while (!operation.done) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        operation = await ai.checkOperation(operation);
-      }
-
-      if (operation.error) {
-        throw new Error('failed to generate video: ' + operation.error.message);
-      }
-
-      const video = operation.output?.message?.content.find(p => !!p.media);
-      if (!video) {
-        throw new Error('Failed to find the generated video');
-      }
-
-      const videoDataUri = await downloadVideo(video);
 
       return {
         videoCaption: videoDetails.videoCaption,
-        videoUrl: videoDataUri,
+        videoUrl: videoUrl,
       };
     }
 
