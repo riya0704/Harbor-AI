@@ -1,3 +1,4 @@
+
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
 export interface UserDocument extends Document {
@@ -11,7 +12,7 @@ export interface UserDocument extends Document {
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true, select: true }, // The 'select: true' was missing
+  passwordHash: { type: String, required: true, select: false }, // Correctly hide the password hash
   createdAt: { type: Date, default: Date.now },
 });
 
