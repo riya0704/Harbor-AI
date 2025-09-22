@@ -15,19 +15,19 @@ const UserSchema = new Schema({
   passwordHash: { type: String, required: true, select: false },
   createdAt: { type: Date, default: Date.now },
 }, {
-  // Consolidate transformations for toJSON and toObject
+  // This transform is used for toJSON and toObject
   transform: (doc, ret) => {
     ret.id = ret._id.toString();
     delete ret._id;
     delete ret.__v;
-    delete ret.passwordHash; // Ensure hash is never sent
+    // The passwordHash is NOT deleted here. It is handled by `select: false` in the schema.
   },
   virtuals: true,
 });
 
 // Apply the transform to both toJSON and toObject
-UserSchema.set('toJSON', UserSchema.get('transform'));
-UserSchema.set('toObject', UserSchema.get('transform'));
+UserSchema.set('toJSON', { transform: UserSchema.get('transform') });
+UserSchema.set('toObject', { transform: UserSchema.get('transform') });
 
 
 const UserModel = models.User || model<UserDocument>('User', UserSchema);
