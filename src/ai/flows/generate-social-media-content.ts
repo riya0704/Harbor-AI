@@ -21,15 +21,15 @@ const GenerateSocialMediaContentInputSchema = z.object({
   suggestion: z.string().describe('The user selected suggestion to expand upon.'),
   tone: z
     .string()
-    .default('')
+    .optional()
     .describe('The desired tone of the content (e.g., professional, funny, informative).'),
   style: z
     .string()
-    .default('')
+    .optional()
     .describe('The desired style of the content (e.g., minimalist, vibrant, corporate).'),
   persona: z
     .string()
-    .default('')
+    .optional()
     .describe('The persona to use when generating the content. Ex. "youthful", "expert", etc.'),
 });
 

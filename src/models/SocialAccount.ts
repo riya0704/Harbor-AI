@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, models, model } from 'mongoose';
 import type { SocialAccount as SocialAccountType } from '@/lib/types';
 
 export interface SocialAccountDocument extends Omit<SocialAccountType, 'id'>, Document {
-  id: string; // virtual getter
+  id: string;
   userId: mongoose.Types.ObjectId;
   accessToken?: string;
   refreshToken?: string;
@@ -17,29 +17,26 @@ const SocialAccountSchema = new Schema<SocialAccountDocument>({
   accessToken: { type: String },
   refreshToken: { type: String },
   tokenExpiresAt: { type: Date },
+}, {
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret._id;
+      delete ret.__v;
+    }
+  },
+  toObject: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
 });
 
 
 SocialAccountSchema.virtual('id').get(function() {
   return this._id.toHexString();
-});
-
-
-// Ensure virtuals are included
-SocialAccountSchema.set('toJSON', {
-  virtuals: true,
-  transform: (doc, ret) => {
-    delete ret._id;
-    delete ret.__v;
-  }
-});
-
-SocialAccountSchema.set('toObject', {
-  virtuals: true,
-  transform: (doc, ret) => {
-    delete ret._id;
-    delete ret.__v;
-  }
 });
 
 
