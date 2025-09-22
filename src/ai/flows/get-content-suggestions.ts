@@ -38,6 +38,7 @@ export async function getContentSuggestions(input: GetContentSuggestionsInput): 
 
 const prompt = ai.definePrompt({
   name: 'getContentSuggestionsPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GetContentSuggestionsInputSchema},
   output: {schema: GetContentSuggestionsOutputSchema},
   prompt: `You are a social media expert helping businesses create engaging content.

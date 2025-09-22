@@ -64,6 +64,7 @@ export async function generateSocialMediaContent(
 
 const textGenerationPrompt = ai.definePrompt({
   name: 'textGenerationPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateSocialMediaContentInputSchema},
   output: {
     schema: z.object({
@@ -87,6 +88,7 @@ Ensure that the content is creative, engaging, and doesn't sound too AI-generate
 
 const imageGenerationPrompt = ai.definePrompt({
   name: 'imageGenerationPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateSocialMediaContentInputSchema},
   output: {
     schema: z.object({
@@ -117,6 +119,7 @@ Ensure the caption is engaging and the image prompt is specific enough to genera
 
 const videoGenerationPrompt = ai.definePrompt({
   name: 'videoGenerationPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateSocialMediaContentInputSchema},
   output: {
     schema: z.object({
