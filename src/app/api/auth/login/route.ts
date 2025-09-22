@@ -13,23 +13,32 @@ export async function POST(request: Request) {
   try {
     await ensureDbConnection();
     const { email, password } = await request.json();
+    console.log('Login API: Received request for email:', email);
+
 
     if (!email || !password) {
+      console.error('Login API: Email and password are required');
       return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
     }
 
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
+      console.warn('Login API: User not found for email:', email);
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
-
+    
+    console.log('Login API: Found user. Comparing passwords...');
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    console.log('Login API: Password comparison result:', isPasswordValid);
+
     if (!isPasswordValid) {
+      console.warn('Login API: Invalid password for email:', email);
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {
+        console.error('!!! Login API: JWT_SECRET is not defined!');
         throw new Error('JWT_SECRET is not defined in environment variables');
     }
 
@@ -38,13 +47,15 @@ export async function POST(request: Request) {
       secret,
       { expiresIn: '1d' }
     );
+    console.log('Login API: JWT token generated successfully.');
     
     const userObject = user.toObject();
-
+    // passwordHash is removed by the 'toObject' transform in the model
+    
     return NextResponse.json({ user: userObject, token }, { status: 200 });
 
   } catch (error: any) {
-    console.error('Login failed:', error);
+    console.error('!!! Login API: FATAL ERROR during login:', error);
     return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }
