@@ -30,6 +30,7 @@ const UserSchema = new Schema({
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
+      delete ret.passwordHash; // Ensure hash is not exposed in objects
     }
   }
 });
