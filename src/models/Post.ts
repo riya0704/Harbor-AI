@@ -6,7 +6,7 @@ export interface PostDocument extends Omit<PostType, 'id'>, Document {
   userId: mongoose.Types.ObjectId;
 }
 
-const PostSchema = new Schema<PostDocument>({
+const PostSchema = models.Post?.schema || new Schema<PostDocument>({
   date: { type: Date, required: true },
   platforms: [{ type: String, required: true }],
   content: { type: String, required: true },

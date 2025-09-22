@@ -9,7 +9,7 @@ export interface SocialAccountDocument extends Omit<SocialAccountType, 'id'>, Do
   tokenExpiresAt?: Date;
 }
 
-const SocialAccountSchema = new Schema<SocialAccountDocument>({
+const SocialAccountSchema = models.SocialAccount?.schema || new Schema<SocialAccountDocument>({
   platform: { type: String, required: true },
   username: { type: String, required: true },
   avatarUrl: { type: String, required: true },
