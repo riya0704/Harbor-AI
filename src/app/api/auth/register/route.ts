@@ -23,19 +23,15 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
+    const newUser = await User.create({
       name,
       email,
       passwordHash,
     });
 
-    await newUser.save();
+    // The toJSON transform in the model will handle removing passwordHash
+    return NextResponse.json(newUser, { status: 201 });
 
-    const userObject = newUser.toObject();
-    // Don't send the password hash back to the client
-    delete userObject.passwordHash;
-
-    return NextResponse.json(userObject, { status: 201 });
   } catch (error) {
     console.error('Registration failed:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

@@ -1,7 +1,7 @@
-
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
 export interface UserDocument extends Document {
+  _id: mongoose.Types.ObjectId;
   id: string;
   name: string;
   email: string;
@@ -14,23 +14,25 @@ const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true, select: false },
   createdAt: { type: Date, default: Date.now },
-});
-
-// Ensure virtual 'id' is included in toObject and toJSON outputs
-UserSchema.set('toObject', {
-  virtuals: true,
-  transform: (doc, ret) => {
-    delete ret._id;
+}, {
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      delete ret.passwordHash; // Ensure hash is not sent in JSON response
+    }
+  },
+  toObject: {
+    virtuals: true,
+     transform: (doc, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+    }
   }
 });
-UserSchema.set('toJSON', {
-  virtuals: true,
-  transform: (doc, ret) => {
-    delete ret._id;
-    delete ret.passwordHash;
-  }
-});
-
 
 const UserModel = models.User || model<UserDocument>('User', UserSchema);
 
