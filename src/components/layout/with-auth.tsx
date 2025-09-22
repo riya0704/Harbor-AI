@@ -13,8 +13,13 @@ export default function withAuth<P extends object>(
     const { user, isAuthLoading } = useAppContext();
 
     useEffect(() => {
+      console.log('AuthCheck:', { isAuthLoading, user, router });
       if (!isAuthLoading && !user) {
-        router.replace('/login');
+        if (router) {
+            router.replace('/login');
+        } else {
+            console.error('Router is null. Cannot redirect.');
+        }
       }
     }, [user, isAuthLoading, router]);
 
