@@ -20,22 +20,24 @@ const SocialAccountSchema = models.SocialAccount?.schema || new Schema<SocialAcc
 }, {
   toJSON: {
     virtuals: true,
-    transform: (doc, ret) => {
+    transform: (_doc, ret: any) => {
       delete ret._id;
       delete ret.__v;
+      return ret;
     }
   },
   toObject: {
     virtuals: true,
-    transform: (doc, ret) => {
+    transform: (_doc, ret: any) => {
       delete ret._id;
       delete ret.__v;
+      return ret;
     }
   }
 });
 
 
-SocialAccountSchema.virtual('id').get(function() {
+SocialAccountSchema.virtual('id').get(function(this: SocialAccountDocument) {
   return this._id.toHexString();
 });
 

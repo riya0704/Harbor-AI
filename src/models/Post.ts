@@ -18,21 +18,23 @@ const PostSchema = models.Post?.schema || new Schema<PostDocument>({
 }, {
   toJSON: {
     virtuals: true,
-    transform: (doc, ret) => {
+    transform: (_doc, ret: any) => {
       delete ret._id;
       delete ret.__v;
+      return ret;
     }
   },
   toObject: {
     virtuals: true,
-    transform: (doc, ret) => {
+    transform: (_doc, ret: any) => {
       delete ret._id;
       delete ret.__v;
+      return ret;
     }
   }
 });
 
-PostSchema.virtual('id').get(function() {
+PostSchema.virtual('id').get(function(this: PostDocument) {
   return this._id.toHexString();
 });
 

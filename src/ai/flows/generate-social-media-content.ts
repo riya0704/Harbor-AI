@@ -1,213 +1,173 @@
-'use server';
-/**
- * @fileOverview This file defines a Genkit flow for generating personalized social media content.
- *
- * The flow takes user input about their business and generates content (text, image + caption, video + caption) for social media posts.
- * It exports:
- * - `generateSocialMediaContent`: The main function to trigger the content generation flow.
- * - `GenerateSocialMediaContentInput`: The input type for the `generateSocialMediaContent` function.
- * - `GenerateSocialMediaContentOutput`: The output type for the `generateSocialMediaContent` function.
- */
-
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import type {MediaPart} from 'genkit';
-
-const GenerateSocialMediaContentInputSchema = z.object({
-  businessDetails: z
-    .string()
-    .describe('Details about the business or topic for which content is to be generated.'),
-  contentType: z.enum(['text', 'image', 'video']).describe('The type of content to generate.'),
-  suggestion: z.string().describe('The user selected suggestion to expand upon.'),
-  tone: z
-    .string()
-    .optional()
-    .describe('The desired tone of the content (e.g., professional, funny, informative).'),
-  style: z
-    .string()
-    .optional()
-    .describe('The desired style of the content (e.g., minimalist, vibrant, corporate).'),
-  persona: z
-    .string()
-    .optional()
-    .describe('The persona to use when generating the content. Ex. "youthful", "expert", etc.'),
-});
-
-export type GenerateSocialMediaContentInput = z.infer<
-  typeof GenerateSocialMediaContentInputSchema
->;
-
-const GenerateSocialMediaContentOutputSchema = z.object({
-  text: z.string().optional().describe('The generated text content for a text-only post.'),
-  imageCaption: z
-    .string()
-    .optional()
-    .describe('The caption for the generated image.'),
-  imagePrompt: z
-    .string()
-    .optional()
-    .describe('A short, descriptive prompt for an image generation model.'),
-  imageUrl: z.string().optional().describe('The URL of the generated image as a data URI.'),
-  videoCaption: z.string().optional().describe('The caption for the generated video.'),
-  videoUrl: z.string().optional().describe('The URL of the generated video as a data URI.'),
-});
-
-export type GenerateSocialMediaContentOutput = z.infer<
-  typeof GenerateSocialMediaContentOutputSchema
->;
-
-export async function generateSocialMediaContent(
-  input: GenerateSocialMediaContentInput
-): Promise<GenerateSocialMediaContentOutput> {
-  return generateSocialMediaContentFlow(input);
+interface ContentGenerationRequest {
+  businessDetails: string;
+  contentType: 'text' | 'image' | 'video';
+  suggestion: string;
+  tone: string;
+  style: string;
+  persona: string;
 }
 
-const textGenerationPrompt = ai.definePrompt({
-  name: 'textGenerationPrompt',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateSocialMediaContentInputSchema},
-  output: {
-    schema: z.object({
-      text: z.string().describe('The generated text content for a text-only post.'),
-    }),
-  },
-  prompt: `You are a social media expert. Your task is to expand the following content idea into a full social media post.
+interface GeneratedContent {
+  text?: string;
+  imageCaption?: string;
+  imagePrompt?: string;
+  imageUrl?: string;
+  videoCaption?: string;
+  videoUrl?: string;
+}
 
-Content Idea: "{{{suggestion}}}"
+export async function generateSocialMediaContent(
+  request: ContentGenerationRequest
+): Promise<GeneratedContent> {
+  const { businessDetails, contentType, suggestion, tone, style, persona } = request;
 
-Take this idea and generate an engaging text-only social media post based on the provided business details and desired tone, style, and persona.
-
-Business Details: {{{businessDetails}}}
-{{#if tone}}Tone: {{{tone}}}{{/if}}
-{{#if style}}Style: {{{style}}}{{/if}}
-{{#if persona}}Persona: {{{persona}}}{{/if}}
-
-Ensure that the content is creative, engaging, and doesn't sound too AI-generated.
-`,
-});
-
-const imageGenerationPrompt = ai.definePrompt({
-  name: 'imageGenerationPrompt',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateSocialMediaContentInputSchema},
-  output: {
-    schema: z.object({
-      imageCaption: z.string().describe('The caption for the generated image.'),
-      imagePrompt: z
-        .string()
-        .describe(
-          'A short, descriptive prompt for an image generation model. This should be a single sentence describing the visual content.'
-        ),
-    }),
-  },
-  prompt: `You are a social media expert. Your task is to generate a caption and an image prompt for a social media post based on a content idea.
-
-Content Idea: "{{{suggestion}}}"
-
-Based on the idea, business details, and desired tone/style/persona, generate:
-1. An engaging and creative caption for the image.
-2. A concise, descriptive prompt (1-2 sentences) to be used with an AI image generation model to create a visually appealing image that matches the caption.
-
-Business Details: {{{businessDetails}}}
-{{#if tone}}Tone: {{{tone}}}{{/if}}
-{{#if style}}Style: {{{style}}}{{/if}}
-{{#if persona}}Persona: {{{persona}}}{{/if}}
-
-Ensure the caption is engaging and the image prompt is specific enough to generate a high-quality image.
-`,
-});
-
-const videoGenerationPrompt = ai.definePrompt({
-  name: 'videoGenerationPrompt',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateSocialMediaContentInputSchema},
-  output: {
-    schema: z.object({
-      videoCaption: z.string().describe('The caption for the generated video.'),
-      videoPrompt: z
-        .string()
-        .describe(
-          'A concise, descriptive prompt for an AI video generation model. This should be a single sentence describing the visual content of the video. The prompt should be cinematic and evocative.'
-        ),
-    }),
-  },
-  prompt: `You are a social media expert and film director. Your task is to generate a caption and a video prompt for a social media post based on a content idea.
-
-Content Idea: "{{{suggestion}}}"
-
-Based on the idea, business details, and desired tone/style/persona, generate:
-1. An engaging and creative caption for the video.
-2. A concise, descriptive, and cinematic prompt (1 sentence) to be used with an AI video generation model to create a visually appealing, high-quality, short social media video.
-
-Business Details: {{{businessDetails}}}
-{{#if tone}}Tone: {{{tone}}}{{/if}}
-{{#if style}}Style: {{{style}}}{{/if}}
-{{#if persona}}Persona: {{{persona}}}{{/if}}
-
-Ensure the caption is engaging and the video prompt is specific and creative enough to generate a high-quality video.
-`,
-});
-
-// Simple hash function to create a seed from a string
-const simpleHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-};
-
-
-const generateSocialMediaContentFlow = ai.defineFlow(
-  {
-    name: 'generateSocialMediaContentFlow',
-    inputSchema: GenerateSocialMediaContentInputSchema,
-    outputSchema: GenerateSocialMediaContentOutputSchema,
-  },
-  async input => {
-    if (input.contentType === 'text') {
-      const {output} = await textGenerationPrompt(input);
-      return output!;
-    }
-
-    if (input.contentType === 'image') {
-      // 1. Generate caption and image prompt
-      const {output: imageDetails} = await imageGenerationPrompt(input);
-      if (!imageDetails?.imagePrompt) {
-        throw new Error('Failed to generate image details.');
-      }
-
-      // 2. Generate a placeholder image URL instead of calling Imagen
-      const seed = simpleHash(imageDetails.imagePrompt);
-      const imageUrl = `https://picsum.photos/seed/${seed}/400/400`;
-
+  // Extract business name from details
+  const businessName = businessDetails.split('\n')[0]?.replace('Business: ', '') || 'Your Business';
+  
+  // Mock content generation - in a real implementation, this would call an AI service
+  switch (contentType) {
+    case 'text':
       return {
-        imageCaption: imageDetails.imageCaption,
-        imagePrompt: imageDetails.imagePrompt,
-        imageUrl: imageUrl,
+        text: generateTextContent(suggestion, tone, style, persona, businessName)
       };
-    }
-
-    if (input.contentType === 'video') {
-      // 1. Generate caption and video prompt
-      const {output: videoDetails} = await videoGenerationPrompt(input);
-      if (!videoDetails?.videoPrompt) {
-        throw new Error('Failed to generate video details.');
-      }
-
-      // 2. Generate a placeholder video URL instead of calling Veo
-      const seed = simpleHash(videoDetails.videoPrompt);
-      const videoUrl = `https://videos.pexels.com/video-files/3209828/3209828-sd_640_360_30fps.mp4`;
-
-
+    
+    case 'image':
       return {
-        videoCaption: videoDetails.videoCaption,
-        videoUrl: videoUrl,
+        imageCaption: generateImageCaption(suggestion, tone, businessName),
+        imagePrompt: generateImagePrompt(suggestion, style),
+        imageUrl: undefined // Would be generated by AI image service
       };
-    }
-
-    return {};
+    
+    case 'video':
+      return {
+        videoCaption: generateVideoCaption(suggestion, tone, businessName),
+        videoUrl: undefined // Would be generated by AI video service
+      };
+    
+    default:
+      return {
+        text: generateTextContent(suggestion, tone, style, persona, businessName)
+      };
   }
-);
+}
+
+function generateTextContent(suggestion: string, tone: string, style: string, persona: string, businessName: string): string {
+  const templates = {
+    professional: {
+      informative: `🔍 ${suggestion}
+
+At ${businessName}, we've observed that this approach can significantly impact your results. Here are key insights:
+
+• Focus on understanding your audience's needs
+• Implement data-driven strategies
+• Measure and optimize continuously
+
+What's your experience with this? Share your thoughts below! 👇
+
+#Business #Strategy #Growth`,
+      
+      engaging: `💡 Here's something interesting about ${suggestion.toLowerCase()}...
+
+We've been exploring this at ${businessName} and the results are fascinating! 
+
+The key is to think differently about how we approach this challenge. Instead of following the crowd, consider:
+
+✨ What unique perspective can you bring?
+✨ How can you add genuine value?
+✨ What would your ideal customer want to know?
+
+Drop a comment and let's discuss! 🚀`,
+      
+      storytelling: `📖 A quick story about ${suggestion.toLowerCase()}...
+
+Last month at ${businessName}, we faced a challenge that many of you might relate to. Here's what happened and what we learned:
+
+[The situation was complex, but the solution was surprisingly simple...]
+
+The lesson? Sometimes the best insights come from stepping back and looking at things from a fresh perspective.
+
+Have you experienced something similar? I'd love to hear your story! 💬`
+    },
+    
+    casual: {
+      informative: `Hey everyone! 👋
+
+Let's talk about ${suggestion.toLowerCase()}. This is something we're passionate about at ${businessName}, and I wanted to share some quick insights:
+
+→ Start with the basics
+→ Build momentum gradually  
+→ Stay consistent with your efforts
+
+It's not rocket science, but it works! What questions do you have about this?
+
+#Tips #Learning #Community`,
+      
+      engaging: `Okay, real talk... 🗣️
+
+${suggestion} is one of those things that sounds complicated but really isn't. At ${businessName}, we've simplified it down to this:
+
+1. Know what you're trying to achieve
+2. Take action (even small steps count!)
+3. Learn from what happens
+4. Repeat
+
+That's it! No fancy strategies needed. Who's ready to give this a try? 💪`,
+      
+      storytelling: `So here's what happened... 😅
+
+We were working on ${suggestion.toLowerCase()} at ${businessName} when everything went sideways. But you know what? That "failure" taught us more than any success ever could.
+
+The real breakthrough came when we stopped overthinking and just... did the work.
+
+Sometimes the best lessons come from the messiest experiences. Anyone else been there? 🙋‍♀️`
+    }
+  };
+
+  const toneKey = tone.toLowerCase() as keyof typeof templates;
+  const styleKey = style.toLowerCase() as keyof typeof templates[typeof toneKey];
+  
+  if (templates[toneKey] && templates[toneKey][styleKey]) {
+    return templates[toneKey][styleKey];
+  }
+  
+  // Fallback content
+  return `${suggestion}
+
+At ${businessName}, we believe in sharing valuable insights with our community. This topic is particularly important because it affects so many aspects of business growth.
+
+Key takeaways:
+• Understanding is the first step
+• Implementation requires consistency
+• Results come from sustained effort
+
+What are your thoughts on this? Let's start a conversation! 
+
+#Business #Insights #Community`;
+}
+
+function generateImageCaption(suggestion: string, tone: string, businessName: string): string {
+  return `✨ ${suggestion}
+
+${businessName} is excited to share this visual insight with you! 
+
+What do you think about this approach? Share your thoughts in the comments! 👇
+
+#Visual #Insights #${businessName.replace(/\s+/g, '')}`;
+}
+
+function generateImagePrompt(suggestion: string, style: string): string {
+  return `Create a ${style} visual representation of "${suggestion}". Include modern design elements, professional color scheme, and clear typography. The image should be engaging and suitable for social media sharing.`;
+}
+
+function generateVideoCaption(suggestion: string, tone: string, businessName: string): string {
+  return `🎥 ${suggestion}
+
+Watch this quick video from ${businessName} to learn more about this important topic!
+
+Don't forget to:
+• Like if this was helpful
+• Share with someone who needs to see this
+• Follow for more insights
+
+#Video #Tips #${businessName.replace(/\s+/g, '')}`;
+}
