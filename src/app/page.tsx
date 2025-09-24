@@ -252,7 +252,7 @@ function DashboardPage() {
                     <Button 
                       variant="outline" 
                       className="h-20 flex-col space-y-2"
-                      onClick={() => router.push('/dashboard?tab=analytics')}
+                      onClick={() => router.push('/analytics')}
                     >
                       <BarChart3 className="h-6 w-6" />
                       <span>View Analytics</span>

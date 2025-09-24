@@ -45,8 +45,8 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
       const data = await response.json();
 
       if (response.ok) {
-        setEvents(data.events);
-        setEventsByDate(data.eventsByDate);
+        setEvents(data.events || []);
+        setEventsByDate(data.eventsByDate || {});
       } else {
         throw new Error(data.error || 'Failed to fetch calendar data');
       }

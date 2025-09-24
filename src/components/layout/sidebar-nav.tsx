@@ -38,7 +38,7 @@ export default function SidebarNav() {
   const mainNavItems = [
     { href: "/", label: "Dashboard", icon: Home, description: "Overview & insights" },
     { href: "/calendar", label: "Calendar", icon: Calendar, description: "Schedule posts" },
-    { href: "/dashboard", label: "Analytics", icon: BarChart3, description: "Performance metrics" },
+    { href: "/analytics", label: "Analytics", icon: BarChart3, description: "Performance metrics" },
   ];
 
   const aiNavItems = [
