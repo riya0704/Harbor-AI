@@ -82,35 +82,35 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
     );
   }
 
-  if (!stats) {
+  if (!stats || !stats.overview) {
     return null;
   }
 
   const statCards = [
     {
       title: 'Total Scheduled',
-      value: stats.overview.totalScheduled,
+      value: stats.overview.totalScheduled || 0,
       icon: Calendar,
       color: 'text-blue-600',
       bgColor: 'bg-blue-100'
     },
     {
       title: 'Pending Posts',
-      value: stats.overview.pendingPosts,
+      value: stats.overview.pendingPosts || 0,
       icon: Clock,
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-100'
     },
     {
       title: 'Published',
-      value: stats.overview.publishedPosts,
+      value: stats.overview.publishedPosts || 0,
       icon: CheckCircle,
       color: 'text-green-600',
       bgColor: 'bg-green-100'
     },
     {
       title: 'Success Rate',
-      value: `${stats.overview.successRate}%`,
+      value: `${stats.overview.successRate || 0}%`,
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-100'
@@ -200,7 +200,7 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
                       {post.content}
                     </p>
                     <div className="flex items-center space-x-1">
-                      {post.platforms.map((platform, index) => (
+                      {post.platforms && post.platforms.map((platform, index) => (
                         <div
                           key={index}
                           className={`w-2 h-2 rounded-full ${
