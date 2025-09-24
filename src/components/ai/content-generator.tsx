@@ -57,7 +57,7 @@ export function ContentGenerator({ onContentGenerated, onScheduleContent }: Cont
       const response = await fetch('/api/ai/content/suggestions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -105,7 +105,7 @@ export function ContentGenerator({ onContentGenerated, onScheduleContent }: Cont
       const response = await fetch('/api/ai/content/generate', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -157,7 +157,7 @@ export function ContentGenerator({ onContentGenerated, onScheduleContent }: Cont
       const response = await fetch('/api/ai/content/refine', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

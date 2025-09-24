@@ -45,7 +45,7 @@ export function Chatbot({ onContextComplete }: ChatbotProps) {
       const response = await fetch('/api/ai/chat/sessions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
         }
       });
@@ -91,7 +91,7 @@ export function Chatbot({ onContextComplete }: ChatbotProps) {
       const response = await fetch(`/api/ai/chat/sessions/${sessionId}/messages`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ message: userMessage.content })

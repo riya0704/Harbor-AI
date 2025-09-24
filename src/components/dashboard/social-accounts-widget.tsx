@@ -23,7 +23,7 @@ export function SocialAccountsWidget({ refreshTrigger, detailed = false }: Socia
     try {
       const response = await fetch('/api/social/accounts', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 

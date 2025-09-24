@@ -230,7 +230,7 @@ export const apiClient = {
     url: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     
     const defaultOptions: RequestInit = {
       headers: {

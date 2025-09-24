@@ -38,7 +38,7 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
     try {
       const response = await fetch('/api/posts/stats?days=30', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 

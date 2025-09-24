@@ -37,7 +37,7 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
         `/api/calendar/posts?year=${year}&month=${month}&view=${view}`,
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
           }
         }
       );

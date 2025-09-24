@@ -35,7 +35,7 @@ export function SchedulingAnalytics({ refreshTrigger }: SchedulingAnalyticsProps
     try {
       const response = await fetch(`/api/posts/stats?days=${timeRange}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 

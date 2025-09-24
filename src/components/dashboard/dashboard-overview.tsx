@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
   TrendingUp,
   Users,
   BarChart3
@@ -40,10 +40,10 @@ export function DashboardOverview({ refreshTrigger }: DashboardOverviewProps) {
       // Fetch scheduling stats
       const [schedulingResponse, accountsResponse] = await Promise.all([
         fetch('/api/posts/stats?days=30', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
         }),
         fetch('/api/social/accounts', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
         })
       ]);
 
@@ -54,7 +54,7 @@ export function DashboardOverview({ refreshTrigger }: DashboardOverviewProps) {
 
       if (schedulingResponse.ok && accountsResponse.ok) {
         const schedulingStats = schedulingData.userStats;
-        
+
         setStats({
           totalScheduled: schedulingStats.overview.totalScheduled,
           pendingPosts: schedulingStats.overview.pendingPosts,
@@ -205,7 +205,7 @@ export function DashboardOverview({ refreshTrigger }: DashboardOverviewProps) {
                 </div>
                 <span className="text-sm font-medium">{stats.publishedPosts}</span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4 text-yellow-500" />
@@ -213,7 +213,7 @@ export function DashboardOverview({ refreshTrigger }: DashboardOverviewProps) {
                 </div>
                 <span className="text-sm font-medium">{stats.pendingPosts}</span>
               </div>
-              
+
               {stats.failedPosts > 0 && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">

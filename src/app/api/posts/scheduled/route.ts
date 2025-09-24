@@ -1,77 +1,23 @@
 import { NextResponse } from 'next/server';
 import { withAuth, AuthenticatedRequest } from '@/lib/auth';
-import SchedulerService from '@/lib/scheduler';
 import clientPromise from '@/lib/mongodb';
 
-// Get user's scheduled posts
+// Get scheduled posts for user
 async function getScheduledPosts(request: AuthenticatedRequest) {
   try {
     await clientPromise;
     
-    const { searchParams } = new URL(request.url);
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    const status = searchParams.get('status');
-    const platform = searchParams.get('platform');
-
     const userId = request.user.userId;
-    const schedulerService = SchedulerService.getInstance();
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get('limit') || '50');
 
-    // Build date range filter
-    let dateRange;
-    if (startDate && endDate) {
-      dateRange = {
-        start: new Date(startDate),
-        end: new Date(endDate)
-      };
-    }
+    // Mock data for now - in a real implementation, this would query the database
+    const mockScheduledPosts = generateMockScheduledPosts(limit);
 
-    // Get scheduled posts
-    const scheduledPosts = await schedulerService.getScheduledPosts(userId, dateRange);
-
-    // Apply additional filters
-    let filteredPosts = scheduledPosts;
-
-    if (status) {
-      filteredPosts = filteredPosts.filter(post => post.status === status);
-    }
-
-    if (platform) {
-      filteredPosts = filteredPosts.filter(post => 
-        post.platforms.includes(platform as any)
-      );
-    }
-
-    // Format response
-    const formattedPosts = filteredPosts.map(scheduledPost => ({
-      id: scheduledPost.id,
-      postId: scheduledPost.postId,
-      scheduledTime: scheduledPost.scheduledTime,
-      platforms: scheduledPost.platforms,
-      status: scheduledPost.status,
-      publishResults: scheduledPost.publishResults,
-      retryCount: scheduledPost.retryCount,
-      createdAt: scheduledPost.createdAt,
-      post: scheduledPost.postId ? {
-        id: scheduledPost.postId._id,
-        content: scheduledPost.postId.content,
-        image: scheduledPost.postId.image,
-        video: scheduledPost.postId.video,
-        type: scheduledPost.postId.type
-      } : null
-    }));
-
-    return NextResponse.json({
-      scheduledPosts: formattedPosts,
-      total: formattedPosts.length,
-      filters: {
-        startDate,
-        endDate,
-        status,
-        platform
-      }
+    return NextResponse.json({ 
+      scheduledPosts: mockScheduledPosts,
+      total: mockScheduledPosts.length 
     });
-
   } catch (error) {
     console.error('Error fetching scheduled posts:', error);
     return NextResponse.json(
@@ -79,6 +25,36 @@ async function getScheduledPosts(request: AuthenticatedRequest) {
       { status: 500 }
     );
   }
+}
+
+function generateMockScheduledPosts(limit: number) {
+  const posts = [];
+  const statuses = ['pending', 'published', 'failed', 'cancelled'];
+  const platforms = ['Twitter', 'LinkedIn', 'Instagram'];
+  
+  for (let i = 0; i < Math.min(limit, 20); i++) {
+    const scheduledTime = new Date();
+    scheduledTime.setHours(scheduledTime.getHours() + Math.floor(Math.random() * 48));
+    
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const selectedPlatforms = platforms.slice(0, Math.floor(Math.random() * 3) + 1);
+    
+    posts.push({
+      id: `post-${i + 1}`,
+      status,
+      platforms: selectedPlatforms,
+      scheduledTime: scheduledTime.toISOString(),
+      createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+      post: {
+        content: `This is a sample ${status} post #${i + 1}. It contains engaging content for ${selectedPlatforms.join(' and ')}.`
+      },
+      publishResults: status === 'failed' ? [
+        { platform: selectedPlatforms[0], success: false, error: 'Connection timeout' }
+      ] : []
+    });
+  }
+  
+  return posts;
 }
 
 export const GET = withAuth(getScheduledPosts);

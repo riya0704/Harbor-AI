@@ -28,7 +28,7 @@ export function ConnectionCard({ account, onDisconnect, onVerify }: ConnectionCa
       const response = await fetch(`/api/social/accounts/${account.id}/verify`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 
@@ -66,7 +66,7 @@ export function ConnectionCard({ account, onDisconnect, onVerify }: ConnectionCa
       const response = await fetch(`/api/social/accounts/${account.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 

@@ -31,7 +31,7 @@ export function RecentActivity({ refreshTrigger }: RecentActivityProps) {
         try {
             const response = await fetch('/api/posts/scheduled?limit=10', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
 

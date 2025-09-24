@@ -99,57 +99,57 @@ function DashboardPage() {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center">
-                      <div className="p-2 bg-blue-100 rounded-lg mr-4">
+                      <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-4">
                         <Calendar className="h-6 w-6 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Scheduled Posts</p>
+                        <p className="text-sm font-semibold text-muted-foreground">Scheduled Posts</p>
                         <p className="text-2xl font-bold">12</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center">
-                      <div className="p-2 bg-green-100 rounded-lg mr-4">
+                      <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl mr-4">
                         <CheckCircle className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Published</p>
+                        <p className="text-sm font-semibold text-muted-foreground">Published</p>
                         <p className="text-2xl font-bold">48</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center">
-                      <div className="p-2 bg-purple-100 rounded-lg mr-4">
+                      <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl mr-4">
                         <Users className="h-6 w-6 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Connected Accounts</p>
+                        <p className="text-sm font-semibold text-muted-foreground">Connected Accounts</p>
                         <p className="text-2xl font-bold">3</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center">
-                      <div className="p-2 bg-yellow-100 rounded-lg mr-4">
+                      <div className="p-3 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl mr-4">
                         <Bot className="h-6 w-6 text-yellow-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">AI Generated</p>
+                        <p className="text-sm font-semibold text-muted-foreground">AI Generated</p>
                         <p className="text-2xl font-bold">24</p>
                       </div>
                     </div>
@@ -158,9 +158,9 @@ function DashboardPage() {
               </div>
 
               {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 {/* Left Column - Main Dashboard */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="xl:col-span-2 space-y-6">
                   <DashboardOverview refreshTrigger={refreshTrigger} />
                   <RecentActivity refreshTrigger={refreshTrigger} />
                 </div>

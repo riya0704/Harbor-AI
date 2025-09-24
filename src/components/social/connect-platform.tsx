@@ -24,7 +24,7 @@ export function ConnectPlatform({ platform, description, icon, onConnect }: Conn
       const response = await fetch(`/api/social/oauth/${platform}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 

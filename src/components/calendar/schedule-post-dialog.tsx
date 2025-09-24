@@ -201,7 +201,7 @@ export function SchedulePostDialog({ isOpen, onClose, defaultDate, onScheduled, 
             const response = await fetch('/api/posts/schedule', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
