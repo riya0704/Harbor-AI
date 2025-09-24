@@ -20,6 +20,7 @@ interface AppContextType {
   getPostsForDate: (date: Date) => Post[];
   isLoading: boolean;
   isAuthLoading: boolean;
+  refreshAuthState: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -121,6 +122,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
+  // Function to manually refresh auth state from localStorage
+  const refreshAuthState = useCallback(() => {
+    const storedToken = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('authUser');
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const addAccount = useCallback(async (platform: string, username: string) => {
     if(!token) return;
     try {
@@ -199,7 +210,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [posts]
   );
 
-  const value = { user, token, login, logout, accounts, addAccount, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading, deletePost };
+  // Listen for storage changes (when user logs in from another tab)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'authToken' || e.key === 'authUser') {
+        refreshAuthState();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', refreshAuthState);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', refreshAuthState);
+    };
+  }, [refreshAuthState]);
+
+  const value = { user, token, login, logout, accounts, addAccount, posts, addPost, updatePost, getPostsForDate, isLoading, isAuthLoading, deletePost, refreshAuthState };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

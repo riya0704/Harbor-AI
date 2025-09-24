@@ -80,6 +80,7 @@ export default function RegisterPage() {
 
       if (response.ok) {
         localStorage.setItem('authToken', data.token);
+        localStorage.setItem('authUser', JSON.stringify(data.user));
         router.push('/');
       } else {
         setError(data.message || 'Registration failed');
