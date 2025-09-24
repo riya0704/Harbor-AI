@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAppContext } from '@/context/app-context';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -18,6 +19,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const router = useRouter();
+  const { login } = useAppContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -79,9 +81,13 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('authUser', JSON.stringify(data.user));
-        router.push('/');
+        // After successful registration, log the user in
+        const loginSuccess = await login(formData.email, formData.password);
+        if (loginSuccess) {
+          router.push('/');
+        } else {
+          setError('Registration successful but login failed. Please try logging in.');
+        }
       } else {
         setError(data.message || 'Registration failed');
       }
