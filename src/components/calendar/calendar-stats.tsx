@@ -45,7 +45,21 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
       const data = await response.json();
 
       if (response.ok) {
-        setStats(data.userStats);
+        // Ensure the data structure is what we expect
+        const userStats = data.userStats || {};
+        const safeStats = {
+          overview: userStats.overview || {
+            totalScheduled: 0,
+            pendingPosts: 0,
+            publishedPosts: 0,
+            failedPosts: 0,
+            processingPosts: 0,
+            successRate: 0
+          },
+          platforms: userStats.platforms || {},
+          upcomingPosts: userStats.upcomingPosts || []
+        };
+        setStats(safeStats);
       } else {
         throw new Error(data.error || 'Failed to fetch statistics');
       }
@@ -55,6 +69,19 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
         title: 'Error',
         description: 'Could not load statistics',
         variant: 'destructive'
+      });
+      // Set empty stats to prevent undefined errors
+      setStats({
+        overview: {
+          totalScheduled: 0,
+          pendingPosts: 0,
+          publishedPosts: 0,
+          failedPosts: 0,
+          processingPosts: 0,
+          successRate: 0
+        },
+        platforms: {},
+        upcomingPosts: []
       });
     } finally {
       setIsLoading(false);
@@ -224,14 +251,14 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
       </div>
 
       {/* Status Breakdown */}
-      {(stats.overview.failedPosts > 0 || stats.overview.processingPosts > 0) && (
+      {stats.overview && (stats.overview.failedPosts > 0 || stats.overview.processingPosts > 0) && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Status Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.overview.processingPosts > 0 && (
+              {stats.overview && stats.overview.processingPosts > 0 && (
                 <div className="flex items-center space-x-2">
                   <AlertCircle className="h-5 w-5 text-yellow-500" />
                   <div>
@@ -241,7 +268,7 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
                 </div>
               )}
               
-              {stats.overview.failedPosts > 0 && (
+              {stats.overview && stats.overview.failedPosts > 0 && (
                 <div className="flex items-center space-x-2">
                   <XCircle className="h-5 w-5 text-red-500" />
                   <div>

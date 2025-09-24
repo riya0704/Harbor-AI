@@ -16,9 +16,10 @@ async function getPostsStats(request: AuthenticatedRequest) {
       userStats: {
         overview: {
           totalScheduled: 45,
-          totalPublished: 38,
-          totalFailed: 3,
-          totalCancelled: 4,
+          pendingPosts: 12,
+          publishedPosts: 38,
+          failedPosts: 3,
+          processingPosts: 2,
           successRate: Math.round((38 / (38 + 3)) * 100)
         },
         activity: {
@@ -28,7 +29,30 @@ async function getPostsStats(request: AuthenticatedRequest) {
           'Twitter': 18,
           'LinkedIn': 15,
           'Instagram': 12
-        }
+        },
+        upcomingPosts: [
+          {
+            id: '1',
+            scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            platforms: ['Twitter', 'LinkedIn'],
+            content: 'Exciting product update coming tomorrow! Stay tuned for the big announcement.',
+            type: 'dynamic'
+          },
+          {
+            id: '2',
+            scheduledTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+            platforms: ['Instagram'],
+            content: 'Behind the scenes look at our development process. Check out how we build amazing features!',
+            type: 'static'
+          },
+          {
+            id: '3',
+            scheduledTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+            platforms: ['Twitter'],
+            content: 'Weekly tech tips: How to optimize your social media strategy for better engagement.',
+            type: 'dynamic'
+          }
+        ]
       }
     };
 
