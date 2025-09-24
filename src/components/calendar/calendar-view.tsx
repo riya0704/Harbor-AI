@@ -32,7 +32,7 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
     try {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
-      
+
       const response = await fetch(
         `/api/calendar/posts?year=${year}&month=${month}&view=${view}`,
         {
@@ -142,19 +142,18 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
             {day}
           </div>
         ))}
-        
+
         {/* Calendar days */}
         {days.map(day => {
           const dayEvents = getEventsForDate(day);
           const isCurrentMonth = isSameMonth(day, currentDate);
           const isCurrentDay = isToday(day);
-          
+
           return (
             <div
               key={day.toISOString()}
-              className={`min-h-[120px] p-1 border border-gray-200 cursor-pointer hover:bg-gray-50 ${
-                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : ''
-              } ${isCurrentDay ? 'bg-blue-50 border-blue-200' : ''}`}
+              className={`min-h-[120px] p-1 border border-gray-200 cursor-pointer hover:bg-gray-50 ${!isCurrentMonth ? 'bg-gray-50 text-gray-400' : ''
+                } ${isCurrentDay ? 'bg-blue-50 border-blue-200' : ''}`}
               onClick={() => handleDateClick(day)}
             >
               <div className="flex items-center justify-between mb-1">
@@ -167,7 +166,7 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
                   </Badge>
                 )}
               </div>
-              
+
               <div className="space-y-1">
                 {dayEvents.slice(0, 3).map(event => (
                   <div
@@ -197,7 +196,7 @@ export function CalendarView({ onEventClick, onDateClick }: CalendarViewProps) {
   // Render list view
   const renderListView = () => {
     const sortedEvents = [...events].sort((a, b) => a.date.getTime() - b.date.getTime());
-    
+
     return (
       <div className="space-y-4">
         {sortedEvents.map(event => (

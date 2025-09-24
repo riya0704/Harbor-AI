@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,8 +27,9 @@ import { SocialAccountsWidget } from '@/components/dashboard/social-accounts-wid
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { AIInsights } from '@/components/ai/ai-insights';
+import withAuth from '@/components/layout/with-auth';
 
-export default function DashboardPage() {
+function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { toast } = useToast();
@@ -116,7 +117,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">
                   Manage your connected social media accounts, verify connections, and add new platforms.
                 </p>
-                <Button className="w-full">
+                <Button className="w-full" onClick={() => router.push('/connections')}>
                   <Plus className="h-4 w-4 mr-2" />
                   Connect New Account
                 </Button>
@@ -142,7 +143,7 @@ export default function DashboardPage() {
                       <h4 className="font-medium">Business Context Setup</h4>
                       <p className="text-sm text-muted-foreground">Configure AI for personalized content</p>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => router.push('/ai-assistant')}>
                       Setup
                     </Button>
                   </div>
@@ -152,7 +153,7 @@ export default function DashboardPage() {
                       <h4 className="font-medium">Content Generator</h4>
                       <p className="text-sm text-muted-foreground">AI-powered content creation</p>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => router.push('/ai-assistant?tab=generate')}>
                       Generate
                     </Button>
                   </div>
@@ -162,7 +163,7 @@ export default function DashboardPage() {
                       <h4 className="font-medium">Quick Actions</h4>
                       <p className="text-sm text-muted-foreground">Fast content templates</p>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => router.push('/ai-assistant?tab=quick')}>
                       Use
                     </Button>
                   </div>
@@ -175,3 +176,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+export default withAuth(DashboardPage);

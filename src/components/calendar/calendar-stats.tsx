@@ -145,7 +145,7 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
             <CardTitle className="text-lg">Platform Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            {Object.keys(stats.platforms).length > 0 ? (
+            {stats.platforms && Object.keys(stats.platforms).length > 0 ? (
               <div className="space-y-3">
                 {Object.entries(stats.platforms)
                   .sort(([,a], [,b]) => b - a)
@@ -177,7 +177,7 @@ export function CalendarStats({ refreshTrigger }: CalendarStatsProps) {
             <CardTitle className="text-lg">Upcoming Posts</CardTitle>
           </CardHeader>
           <CardContent>
-            {stats.upcomingPosts.length > 0 ? (
+            {stats.upcomingPosts && stats.upcomingPosts.length > 0 ? (
               <div className="space-y-3">
                 {stats.upcomingPosts.map((post) => (
                   <div key={post.id} className="p-3 border rounded-lg">
