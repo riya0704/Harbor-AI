@@ -305,29 +305,29 @@ export const withRateLimitedAuth = withMiddleware(
   withRequestId
 );
 
-// Error boundary for React components
-export function withErrorBoundary<T extends Record<string, any>>(
-  Component: React.ComponentType<T>
+// Error boundary factory (returns component class, not JSX)
+export function createErrorBoundary<T extends Record<string, any>>(
+  Component: any
 ) {
-  return function ErrorBoundaryWrapper(props: T) {
-    try {
-      return <Component {...props} />;
-    } catch (error) {
-      log.error(
-        'Component error boundary triggered',
-        error instanceof Error ? error : new Error(String(error)),
-        'UI'
-      );
-      
-      // Return error UI
-      return (
-        <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-          <h3 className="text-red-800 font-medium">Something went wrong</h3>
-          <p className="text-red-600 text-sm mt-1">
-            Please refresh the page or try again later.
-          </p>
-        </div>
-      );
+  return class ErrorBoundaryWrapper extends Error {
+    static displayName = `ErrorBoundary(${Component.displayName || Component.name})`;
+    
+    static wrap(props: T) {
+      try {
+        return Component(props);
+      } catch (error) {
+        log.error(
+          'Component error boundary triggered',
+          error instanceof Error ? error : new Error(String(error)),
+          'UI'
+        );
+        
+        // Return error state object instead of JSX
+        return {
+          error: true,
+          message: 'Something went wrong. Please refresh the page or try again later.'
+        };
+      }
     }
   };
 }

@@ -144,4 +144,4 @@ export const CacheKeys = {
   userPreferences: (userId: string) => `user:preferences:${userId}`,
 };
 
-export default CacheService.getInstance();
+export default CacheService;

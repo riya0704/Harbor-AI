@@ -137,4 +137,4 @@ export class CronService {
   }
 }
 
-export default CronService.getInstance();
+export default CronService;

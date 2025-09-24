@@ -505,4 +505,4 @@ export class SocialMediaService {
   }
 }
 
-export default SocialMediaService.getInstance();
+export default SocialMediaService;

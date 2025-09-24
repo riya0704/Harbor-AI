@@ -275,4 +275,4 @@ export class SchedulerService {
   }
 }
 
-export default SchedulerService.getInstance();
+export default SchedulerService;

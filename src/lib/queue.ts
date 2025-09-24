@@ -254,4 +254,4 @@ export class QueueService {
   }
 }
 
-export default QueueService.getInstance();
+export default QueueService;

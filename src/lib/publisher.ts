@@ -383,4 +383,4 @@ export class PublisherService {
   }
 }
 
-export default PublisherService.getInstance();
+export default PublisherService;

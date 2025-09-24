@@ -479,4 +479,4 @@ export class ContentSchedulerService {
   }
 }
 
-export default ContentSchedulerService.getInstance();
+export default ContentSchedulerService;

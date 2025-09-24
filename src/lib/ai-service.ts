@@ -413,4 +413,4 @@ Key Topics: ${businessContext.keyTopics.join(', ')}`;
   }
 }
 
-export default AIService.getInstance();
+export default AIService;
